@@ -1,16 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Crimson+Text:wght@400;600;700&display=swap');
+
+:root {
+    --railway-cream: #f4ead5;
+    --railway-brown: #3d2817;
+    --railway-red: #c1402a;
+    --railway-gold: #d4a574;
+    --railway-green: #2d5a3d;
+    --track-grey: #4a4a4a;
+    --smoke-white: #e8e8e8;
+    --coal-black: #1a1a1a;
+    --cell-size: 60px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+body {
+    font-family: 'Crimson Text', serif;
+    background: linear-gradient(135deg, #2d1810 0%, #4a3426 50%, #2d1810 100%);
+    color: var(--railway-cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.03) 2px,
+            rgba(255, 255, 255, 0.03) 4px
+        );
+    pointer-events: none;
+    z-index: 1;
+}
+
 .board {
-    padding: 20px;
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.game-header h1 {
+    font-family: 'Pirata One', cursive;
+    font-size: 4.5rem;
+    color: var(--railway-gold);
+    text-shadow:
+        3px 3px 0 var(--railway-red),
+        6px 6px 0 var(--railway-brown),
+        2px 2px 20px rgba(193, 64, 42, 0.5);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    animation: trainWhistle 3s ease-in-out infinite;
+}
+
+@keyframes trainWhistle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.game-info {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(61, 40, 23, 0.6);
+    border: 3px solid var(--railway-gold);
+    border-radius: 15px;
+    box-shadow:
+        inset 0 2px 10px rgba(0, 0, 0, 0.3),
+        0 4px 20px rgba(212, 165, 116, 0.2);
+}
+
+.score,
+.placed-count {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--railway-gold);
+    padding: 0.5rem 1.5rem;
+    background: var(--railway-brown);
+    border-radius: 8px;
+    border: 2px solid var(--railway-gold);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.reset-btn {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0.75rem 2rem;
+    background: var(--railway-red);
+    color: var(--smoke-white);
+    border: 3px solid var(--railway-gold);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(193, 64, 42, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.reset-btn:hover {
+    background: #e05038;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(193, 64, 42, 0.6);
+}
+
+.reset-btn:active {
+    transform: translateY(0);
+}
+
+.game-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.grid-wrapper {
+    position: relative;
+    background: var(--railway-cream);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(212, 165, 116, 0.3);
+    border: 5px solid var(--railway-brown);
 }
 
 .grid {
     display: grid;
-    width: 600px;
-    height: 600px;
-    border: 3px solid #fff;
-    background: #222;
+    gap: 2px;
+    background: var(--track-grey);
+    padding: 2px;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .cell {
-    border: 1px solid #fff;
-    background: #222;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background: linear-gradient(135deg, #d4c5a9 0%, #c9b896 100%);
+    border: 1px solid rgba(61, 40, 23, 0.2);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.cell::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px dashed rgba(61, 40, 23, 0.15);
+    border-radius: 2px;
+}
+
+.cell:hover {
+    background: linear-gradient(135deg, #e4d5b9 0%, #d9c8a6 100%);
+}
+
+.placed-dominos {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    pointer-events: none;
+}
+
+.domino-holder {
+    background: rgba(45, 90, 61, 0.3);
+    border: 4px solid var(--railway-green);
+    border-radius: 15px;
+    padding: 1.5rem;
+    min-width: 250px;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.4),
+        inset 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.domino-holder h3 {
+    font-family: 'Pirata One', cursive;
+    font-size: 2rem;
+    color: var(--railway-gold);
+    margin-bottom: 1rem;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.domino-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.domino {
+    width: calc(var(--cell-size) - 4px);
+    height: calc(var(--cell-size) * 2 - 4px);
+    background: white;
+    border: 4px solid #222;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    cursor: grab;
+    transition: all 0.3s ease;
+    box-shadow:
+        0 6px 15px rgba(0, 0, 0, 0.3),
+        inset 0 2px 5px rgba(255, 255, 255, 0.5);
+    position: relative;
+    transform-origin: center center;
+}
+
+.domino:hover:not(.placed) {
+    transform: scale(1.05) rotate(2deg);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.4),
+        inset 0 2px 5px rgba(255, 255, 255, 0.5);
+}
+
+.domino.picked-up {
+    cursor: grabbing;
+    opacity: 0.8;
+    z-index: 1000;
+    pointer-events: none;
+    animation: pickupPulse 0.5s ease;
+}
+
+@keyframes pickupPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.domino.placed {
+    cursor: default;
+    animation: placeDown 0.4s ease;
+}
+
+@keyframes placeDown {
+    0% { transform: scale(1.2) rotate(5deg); opacity: 0; }
+    60% { transform: scale(0.95) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.domino-half {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.domino-top {
+    border-radius: 8px 8px 0 0;
+}
+
+.domino-bottom {
+    border-radius: 0 0 8px 8px;
+}
+
+.domino-divider {
+    height: 3px;
+    background: var(--railway-brown);
+    position: relative;
+}
+
+.domino-divider::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: var(--railway-gold);
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(212, 165, 116, 0.6);
+}
+
+.domino-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--railway-red);
+    text-shadow:
+        1px 1px 0 var(--smoke-white),
+        2px 2px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.domino-value::before {
+    content: attr(data-dots);
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 0.6rem;
+    color: var(--railway-brown);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .game-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .domino-holder {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .domino-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-header h1 {
+        font-size: 3rem;
+    }
+
+    .game-info {
+        gap: 1rem;
+    }
+
+    .score,
+    .placed-count {
+        font-size: 1.2rem;
+        padding: 0.4rem 1rem;
+    }
+
+    :root {
+        --cell-size: 50px;
+    }
+}
+
+/* Loading animation for initial render */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.board {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.game-header {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.game-container {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
 }

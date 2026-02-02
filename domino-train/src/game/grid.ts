@@ -13,7 +13,9 @@ export function placeDomino(
     y: number,
     dominoId: string
 ): Grid {
-    const newGrid = grid.map(row => row.map(cell => ({...cell})));
-    newGrid[x][y].dominoId = dominoId;
+    const newGrid = grid.map(row => row.map(cell => ({ ...cell })));
+    if (x >= 0 && x < GRID_WIDTH && y >= 0 && y < GRID_HEIGHT) {
+        newGrid[y][x].dominoId = dominoId;
+    }
     return newGrid;
 }
