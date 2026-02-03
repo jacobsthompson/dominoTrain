@@ -1,0 +1,112 @@
+.app {
+    padding: 10px;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.grid {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    display: inline-block;
+    position: relative;
+}
+
+.board {
+    display: inline-block;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    position: relative;
+}
+
+.cell {
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.domino-wrapper {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+.domino {
+    position: absolute;
+    user-select: none;
+    display: flex;
+    border-radius: 8px;
+}
+
+.top-half-domino {
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px 8px 0 0;
+    box-sizing: border-box;
+}
+
+.divider-domino {
+    background-color: #000;
+    margin: 0;
+}
+
+.bot-half-domino {
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    border-radius: 0 0 8px 8px;
+    box-sizing: border-box;
+}
+
+.domino-holder {
+    margin-top: 20px;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background-color: #e0e0e0;
+    display: inline-block;
+}
+
+.domino-holder-dominos {
+    position: relative;
+    height: 100px;
+    min-width: 500px;
+    display: flex;
+    align-items: flex-start;
+    margin-left: 25px;
+}
+
+.starting-tile {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+}
+
+.starting-tile-domino {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    background-color: #FFD700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
