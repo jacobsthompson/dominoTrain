@@ -1,5 +1,5 @@
 import {memo} from "react";
-import {GRID_SIZE, CELL_SIZE} from "./constants";
+import {CELL_SIZE} from "./constants";
 import './style.css'
 
 function Board({grid}){

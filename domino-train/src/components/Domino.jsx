@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {CELL_SIZE, GRID_WIDTH, GRID_HEIGHT} from "./constants";
+import {CELL_SIZE} from "./constants";
 import './style.css'
 
 function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
@@ -13,6 +13,8 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
     const rotationRef = useRef(0);
     const isDraggingRef = useRef(false);
     const dragOffsetRef = useRef({x:0,y:0})
+
+    const currentMousePos = useRef({x: 0, y: 0});
 
     useEffect(() => {
         rotationRef.current = rotation;
@@ -29,8 +31,8 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
             case 90:
                 return{
                     orientation: 'h',
-                    topvalue: value1,
-                    botvalue: value2
+                    topvalue: value2,
+                    botvalue: value1
                 };
             case 180:
                 return{
@@ -41,8 +43,8 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
             case 270:
                 return{
                     orientation: 'h',
-                    topvalue: value2,
-                    botvalue: value1
+                    topvalue: value1,
+                    botvalue: value2
                 };
             default:
                 return{
@@ -53,10 +55,32 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
         }
     }
 
+    const recenterPointer = (e) => {
+        const {orientation} = getRotationValues(rotation);
+        const isVertical = orientation === 'v';
+        const dominoWidth = isVertical ? CELL_SIZE : CELL_SIZE*2;
+        const dominoHeight = isVertical ? CELL_SIZE*2 : CELL_SIZE;
+
+        const dominoRect = dominoRef.current.getBoundingClientRect();
+        const clickOffsetX = e.clientX - dominoRect.left;
+        const clickOffsetY = e.clientY - dominoRect.top;
+
+        const centerOffsetX = dominoWidth / 2;
+        const centerOffsetY = dominoHeight / 2;
+
+        const shiftX = clickOffsetX - centerOffsetX;
+        const shiftY = clickOffsetY - centerOffsetY;
+
+        return {shiftX, shiftY}
+    }
+
     useEffect(() => {
         const handleMouseMove = (e) => {
+
+            currentMousePos.current = {x: e.clientX, y: e.clientY}
+
             if (isDraggingRef.current && dominoRef.current){
-                let dragOffset = dragOffsetRef.current;
+                const dragOffset = dragOffsetRef.current;
 
                 const newX = e.clientX - dragOffset.x;
                 const newY = e.clientY - dragOffset.y;
@@ -129,6 +153,7 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
                 setIsPlaced(true);
             } else {
                 setPosition({x:0,y:0});
+                setRotation(0);
                 if (dominoRef.current) {
                   dominoRef.current.style.left = '0px';
                   dominoRef.current.style.top = '0px';
@@ -138,10 +163,12 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
 
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
+        document.addEventListener('keydown', handleKeyDown);
 
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('keydown', handleKeyDown);
         };
     }, [id,value1,value2,onPlacement,isPlaced]);
 
@@ -155,17 +182,25 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
 
         isDraggingRef.current = true;
         setIsDraggingVisual(true);
+
+        const { shiftX, shiftY} = recenterPointer(e);
+
         dragOffsetRef.current = {
-            x: e.clientX - position.x,
-            y: e.clientY - position.y
+            x: e.clientX - position.x - shiftX,
+            y: e.clientY - position.y - shiftY
         };
+
+        const newX = e.clientX - dragOffsetRef.current.x;
+        const newY = e.clientY - dragOffsetRef.current.y;
+
         if(dominoRef.current) {
+            dominoRef.current.style.left = `${newX}px`;
+            dominoRef.current.style.top = `${newY}px`;
             dominoRef.current.style.cursor = 'grabbing';
         }
     };
 
-    const handleContextMenu = (e) => {
-        e.preventDefault();
+    const handleRotation = () => {
         if(isDraggingRef.current){
             const {orientation: currentOrientation} = getRotationValues(rotationRef.current);
             const currentIsVertical = currentOrientation === 'v';
@@ -194,9 +229,26 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
                 dominoRef.current.style.top = `${newTop}px`;
             }
 
+            dragOffsetRef.current = {
+                x: currentMousePos.current.x - newLeft,
+                y: currentMousePos.current.y - newTop
+            }
+
             setPosition({x: newLeft, y: newTop});
             setRotation(newRotation);
         }
+    }
+
+    const handleKeyDown = (e) => {
+        console.log(e.key);
+        if (e.key === 'r') {
+            handleRotation(e);
+        }
+    };
+
+    const handleContextMenu = (e) => {
+        e.preventDefault();
+        handleRotation(e);
     };
 
     const {orientation, topvalue, botvalue} = getRotationValues(rotation);
@@ -211,6 +263,7 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
                 ref={dominoRef}
                 onMouseDown={handleMouseDown}
                 onContextMenu={handleContextMenu}
+                onKeyDown={handleKeyDown}
                 style={{
                     width: width,
                     height: height,
@@ -248,142 +301,3 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
 }
 
 export default Domino;
-
-//OLD VERSION 1x1
-
-// import {useEffect, useRef, useState} from "react";
-// import {GRID_SIZE, CELL_SIZE, GRID_WIDTH, GRID_HEIGHT} from "./constants";
-// import './style.css'
-//
-// function Domino({id, value, onPlacement, onPickup, isFixed = false}){
-//     const [position, setPosition] = useState({x:0,y:0});
-//     const [isPlaced, setIsPlaced] = useState(false);
-//
-//     const dominoRef = useRef(null);
-//     const isDraggingRef = useRef(false);
-//     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
-//
-//     const dragOffsetRef = useRef({x:0,y:0})
-//
-//     const containerRef = useRef(null);
-//
-//
-//     useEffect(() => {
-//         if(isFixed) return;
-//
-//         const handleMouseMove = (e) => {
-//             if (isDraggingRef.current && dominoRef.current){
-//                 let dragOffset = dragOffsetRef.current;
-//
-//                 const newX = e.clientX - dragOffset.x;
-//                 const newY = e.clientY - dragOffset.y;
-//
-//                 dominoRef.current.style.left = `${newX}px`;
-//                 dominoRef.current.style.top = `${newY}px`;
-//             }
-//         };
-//
-//         const handleMouseUp = (e) => {
-//             if (!isDraggingRef.current) return;
-//
-//             isDraggingRef.current = false;
-//             setIsDraggingVisual(false);
-//             if(dominoRef.current) {
-//                 dominoRef.current.style.cursor = 'grab';
-//             }
-//
-//             const board = document.getElementById('board');
-//             const container = containerRef.current;
-//             if(!board || !container) {
-//                 setPosition({x:0,y:0});
-//                 if (dominoRef.current) {
-//                   dominoRef.current.style.left = '0px';
-//                   dominoRef.current.style.top = '0px';
-//                 }
-//                 return;
-//             }
-//
-//             const boardRect = board.getBoundingClientRect();
-//             const containerRect = container.getBoundingClientRect();
-//
-//             const relativeX = e.clientX - boardRect.left;
-//             const relativeY = e.clientY - boardRect.top;
-//
-//             const gridX = Math.floor(relativeX/CELL_SIZE);
-//             const gridY = Math.floor(relativeY/CELL_SIZE);
-//
-//             if (gridX >= 0 && gridX < GRID_WIDTH && gridY >= 0 && gridY < GRID_HEIGHT){
-//                 const success = onPlacement(id, value, gridX, gridY);
-//                 if(success){
-//                     const snappedX = boardRect.left - containerRect.left + (gridX * CELL_SIZE) + 1;
-//                     const snappedY = boardRect.top - containerRect.top + (gridY * CELL_SIZE) + 1;
-//
-//                     setPosition({x:snappedX,y:snappedY});
-//                     setIsPlaced(true);
-//                 } else {
-//                     setPosition({x:0,y:0});
-//                     if (dominoRef.current) {
-//                       dominoRef.current.style.left = '0px';
-//                       dominoRef.current.style.top = '0px';
-//                     }
-//                     console.log("moved back")
-//                 }
-//             } else {
-//                 setPosition({x:0,y:0});
-//                 if (dominoRef.current) {
-//                   dominoRef.current.style.left = '0px';
-//                   dominoRef.current.style.top = '0px';
-//                 }
-//             }
-//         };
-//
-//         document.addEventListener('mousemove', handleMouseMove);
-//         document.addEventListener('mouseup', handleMouseUp);
-//
-//         return () => {
-//             document.removeEventListener('mousemove', handleMouseMove);
-//             document.removeEventListener('mouseup', handleMouseUp);
-//         };
-//     }, [id,value,onPlacement]);
-//
-//     const handleMouseDown = (e) => {
-//         if (isFixed) return;
-//
-//         if (isPlaced && onPickup) {
-//             onPickup(id);
-//             setIsPlaced(false);
-//         }
-//
-//         isDraggingRef.current = true;
-//         setIsDraggingVisual(true);
-//         dragOffsetRef.current = {
-//             x: e.clientX - position.x,
-//             y: e.clientY - position.y
-//         };
-//         if(dominoRef.current) {
-//             dominoRef.current.style.cursor = 'grabbing';
-//         }
-//     };
-//
-//     return (
-//         <div className="domino-wrapper" ref={containerRef} >
-//             <div
-//                 className="domino"
-//                 ref={dominoRef}
-//                 onMouseDown={handleMouseDown}
-//                 style={{
-//                     left: position.x,
-//                     top: position.y,
-//                     backgroundColor: isFixed ? '#FFD700' : (isPlaced ? '#2196F3' : '#4CAF50'),
-//                     cursor: isPlaced ? 'default' : 'grab',
-//                     zIndex: isDraggingVisual ? 1000 : 1,
-//                     boxShadow: isDraggingVisual ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
-//                 }}
-//             >
-//                 {value}
-//             </div>
-//         </div>
-//     );
-// }
-//
-// export default Domino;

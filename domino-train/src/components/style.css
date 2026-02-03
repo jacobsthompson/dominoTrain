@@ -83,23 +83,19 @@
 
 .domino-holder-dominos {
     position: relative;
-    height: 100px;
     min-width: 500px;
     display: flex;
     align-items: flex-start;
     margin-left: 25px;
+    margin-bottom: 25px;
 }
 
 .starting-tile {
     position: absolute;
-    width: 50px;
-    height: 50px;
     pointer-events: none;
 }
 
 .starting-tile-domino {
-    width: 50px;
-    height: 50px;
     border: 1px solid #000;
     background-color: #FFD700;
     display: flex;

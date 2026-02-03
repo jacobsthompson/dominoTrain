@@ -1,9 +1,8 @@
 import {useState} from "react";
 import Board from "./components/Board";
-import Domino from "./components/Domino";
 import DominoHolder from "./components/DominoHolder";
 
-import {GRID_SIZE, CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./components/constants";
+import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./components/constants";
 import './components/style.css'
 
 
@@ -11,7 +10,7 @@ function App() {
     const [grid, setGrid] = useState(() => {
         const initialGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
         initialGrid[Math.floor(GRID_HEIGHT/2)][0] = {id: 'start', value: Math.floor(Math.random() * 6) + 1};
-        initialGrid[Math.floor(GRID_HEIGHT/2)][GRID_SIZE-1] = {id: 'end', value: Math.floor(Math.random() * 6) + 1};
+        initialGrid[Math.floor(GRID_HEIGHT/2)][GRID_WIDTH-1] = {id: 'end', value: Math.floor(Math.random() * 6) + 1};
         return initialGrid;
     });
 
@@ -75,22 +74,24 @@ function App() {
             <div>
                 <button onClick={printGrid} style={{marginBottom: 10}}>Print Grid</button>
             </div>
-            <div className="grid">
-                <Board grid={grid}/>
-                <div className="starting-tile"
-                     style={{left: 0 * GRID_WIDTH + 1, top: Math.floor(GRID_HEIGHT / 2) * CELL_SIZE + 1}}>
-                    <div className="starting-tile-domino">
-                        {grid[Math.floor(GRID_HEIGHT / 2)][0].value}
+            <div>
+                <div className="grid">
+                    <Board grid={grid}/>
+                    <div className="starting-tile"
+                         style={{left: 0 * GRID_WIDTH + 1, top: Math.floor(GRID_HEIGHT / 2) * CELL_SIZE + 1, width: CELL_SIZE, height: CELL_SIZE}}>
+                        <div className="starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
+                            {grid[Math.floor(GRID_HEIGHT / 2)][0].value}
+                        </div>
                     </div>
-                </div>
-                <div className="starting-tile"
-                     style={{left: (GRID_WIDTH - 1) * CELL_SIZE + 1, top: Math.floor(GRID_HEIGHT / 2) * CELL_SIZE + 1}}>
-                    <div className="starting-tile-domino">
-                        {grid[Math.floor(GRID_HEIGHT / 2)][GRID_SIZE - 1].value}
+                    <div className="starting-tile"
+                         style={{left: (GRID_WIDTH - 1) * CELL_SIZE + 1, top: Math.floor(GRID_HEIGHT / 2) * CELL_SIZE + 1, width: CELL_SIZE, height: CELL_SIZE}}>
+                        <div className="starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
+                            {grid[Math.floor(GRID_HEIGHT / 2)][GRID_WIDTH - 1].value}
+                        </div>
                     </div>
                 </div>
             </div>
-            <DominoHolder count={12} onPlacement={handlePlacement} onRemoval={handleRemoval}/>
+            <DominoHolder count={9} onPlacement={handlePlacement} onRemoval={handleRemoval}/>
         </div>
     );
 }
