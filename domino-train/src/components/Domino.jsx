@@ -2,9 +2,9 @@ import {useEffect, useRef, useState} from "react";
 import {CELL_SIZE} from "./constants";
 import './style.css'
 
-function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
+function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
     const [position, setPosition] = useState({x:0,y:0});
-    const [rotation, setRotation]= useState(initRotation);
+    const [rotation, setRotation]= useState(0);
     const [isPlaced, setIsPlaced] = useState(false);
     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
 
@@ -240,7 +240,7 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
     }
 
     const handleKeyDown = (e) => {
-        console.log(e.key);
+        // console.log(e.key);
         if (e.key === 'r') {
             handleRotation(e);
         }
@@ -250,6 +250,36 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
         e.preventDefault();
         handleRotation(e);
     };
+
+    const checkValidity = () => {
+        if(!isPlaced || !validatedGrid){
+            return null;
+        }
+
+        const board = document.getElementById('board');
+        const domino = dominoRef.current;
+        const boardRect = board.getBoundingClientRect();
+        const dominoRect = domino.getBoundingClientRect();
+
+        const dominoX = dominoRect.left + CELL_SIZE/2 - boardRect.left;
+        const dominoY = dominoRect.top + CELL_SIZE/2 - boardRect.top;
+
+        const gridX = Math.floor(dominoX/CELL_SIZE);
+        const gridY = Math.floor(dominoY/CELL_SIZE);
+
+        return validatedGrid[gridY]?.[gridX] !== null;
+    }
+
+    const getDominoColor = () => {
+        const isValid = checkValidity();
+        if(!isPlaced){
+            return '#ccc';
+        }
+        if(isValid === null){
+            return '#ccc';
+        }
+        return isValid ? '#4CAF50' : '#f44336';
+    }
 
     const {orientation, topvalue, botvalue} = getRotationValues(rotation);
     const isVertical = orientation === 'v';
@@ -269,7 +299,7 @@ function Domino({id, value1, value2, initRotation = 0, onPlacement, onPickup}){
                     height: height,
                     left: position.x,
                     top: position.y,
-                    backgroundColor: isPlaced ? '#2196F3' : '#4CAF50',
+                    backgroundColor: getDominoColor(),
                     cursor: isPlaced ? 'default' : 'grab',
                     zIndex: isDraggingVisual ? 1000 : 1,
                     flexDirection: isVertical ? 'column' : 'row',

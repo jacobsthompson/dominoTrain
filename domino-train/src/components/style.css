@@ -7,6 +7,21 @@
     -ms-user-select: none;
 }
 
+.title-card {
+    color: white;
+    font-size: 36px;
+}
+
+.score {
+    color: white;
+    font-size: 18px;
+}
+
+.button {
+    padding: 5px;
+    margin: 10px;
+}
+
 .grid {
     margin-top: 10px;
     margin-bottom: 20px;
@@ -86,8 +101,8 @@
     min-width: 500px;
     display: flex;
     align-items: flex-start;
-    margin-left: 25px;
-    margin-bottom: 25px;
+    margin-left: 20px;
+    margin-bottom: 20px;
 }
 
 .starting-tile {

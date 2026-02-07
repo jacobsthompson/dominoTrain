@@ -3,7 +3,7 @@ import Domino from "./Domino";
 import './style.css'
 import {CELL_SIZE} from "./constants";
 
-function DominoHolder({count, onPlacement, onRemoval}){
+function DominoHolder({count, onPlacement, onRemoval, validatedGrid}){
     const [dominos] = useState(() => {
         return Array.from({length: count}, (_, i) => ({
             id: i + 1,
@@ -46,6 +46,7 @@ function DominoHolder({count, onPlacement, onRemoval}){
                            value2={domino.value2}
                            onPlacement={handlePlacement}
                            onPickup={handlePickup}
+                           validatedGrid={validatedGrid}
                        />
                    </div>
                ))}
