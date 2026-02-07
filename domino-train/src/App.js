@@ -10,10 +10,7 @@ function App() {
     const [endTile, setEndTile] = useState({dominoId: "end", col: Math.floor(GRID_HEIGHT/2), row: GRID_WIDTH-1, x: GRID_WIDTH-1, y: Math.floor(GRID_HEIGHT/2), value: Math.floor(Math.random() * 6) + 1});
     const [startingDominoCount, setStartingDominoCount] = useState(12);
 
-    // console.log(startingTile.col, startingTile.row, startingTile.value);
-
     const [grid, setGrid] = useState(Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null)));
-
     const [validatedGrid, setValidatedGrid] = useState(null);
     const [score, setScore] = useState(null);
 
