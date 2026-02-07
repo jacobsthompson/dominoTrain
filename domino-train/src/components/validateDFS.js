@@ -72,11 +72,64 @@ function confirmValidAdjacent(grid, currTile, startTile, endTile){
     }
 
     for(const tile of adjTiles){
-        if(tile.tile?.value === currTile.value || tile.tile?.dominoId === currTile.dominoId){
-            validTiles.push(tile);
+        if(tile.tile !== null && tile.tile !== undefined) {
+            if (tile.tile.value === currTile.value || tile.tile.dominoId === currTile.dominoId) {
+                validTiles.push(tile);
+            }
         }
     }
     return validTiles;
+}
+
+function remove2x2Squares(grid){
+    let inSquareDominos = {};
+    for(let col = 0; col < GRID_HEIGHT-1; col++){
+        for(let row = 0; row < GRID_WIDTH-1; row++){
+            if(
+                (grid[col][row] !== null && grid[col][row] !== undefined) &&
+                (grid[col+1][row] !== null && grid[col][row] !== undefined) &&
+                (grid[col][row+1] !== null && grid[col][row] !== undefined) &&
+                (grid[col+1][row+1] !== null && grid[col][row] !== undefined)
+            ){
+                inSquareDominos[grid[col][row].dominoId] = (inSquareDominos[grid[col][row].dominoId] || 0) + 1;
+                inSquareDominos[grid[col+1][row].dominoId] = (inSquareDominos[grid[col+1][row].dominoId] || 0) + 1;
+                inSquareDominos[grid[col][row+1].dominoId] = (inSquareDominos[grid[col][row+1].dominoId] || 0) + 1;
+                inSquareDominos[grid[col+1][row+1].dominoId] = (inSquareDominos[grid[col+1][row+1].dominoId] || 0) + 1;
+            }
+        }
+    }
+
+    const mostTouchedDominoCount = Math.max(...Object.values(inSquareDominos))
+    const mostTouchedDominos = Object.entries(inSquareDominos)
+        .filter(([dominoId, count]) => count === mostTouchedDominoCount)
+        .map(([dominoId, count]) => parseInt(dominoId));
+
+    let validAdjacentDominos = {};
+    for(let col = 0; col < GRID_HEIGHT; col++) {
+        for (let row = 0; row < GRID_WIDTH; row++) {
+            let currentTile = grid[col][row];
+            if(currentTile !== null && currentTile !== undefined){
+                if(mostTouchedDominos.includes(currentTile.dominoId)){
+                    validAdjacentDominos[currentTile.dominoId] = 0;
+                    const adjTiles = searchAdjacent(grid, currentTile.x, currentTile.y);
+                    for(const tile of adjTiles){
+                        if(tile?.tile?.value === currentTile.value && !(mostTouchedDominos.includes(tile?.tile?.dominoId))){
+                            validAdjacentDominos[currentTile.dominoId] = validAdjacentDominos[currentTile.dominoId] + 1;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    const leastValidDominoCount = Math.min(...Object.values(validAdjacentDominos));
+    return grid.map(row =>
+        row.map(cell => {
+            if (cell === null) return null;
+            return validAdjacentDominos[cell.dominoId] === leastValidDominoCount ? null : cell;
+        })
+    );
 }
 
 function correctPath(grid, startingTile, endTile){
@@ -93,12 +146,14 @@ function correctPath(grid, startingTile, endTile){
         }
     }
 
-    return grid.map(row =>
+    const trimmedGrid = grid.map(row =>
         row.map(cell => {
             if (cell === null) return null;
             return ids[cell.dominoId] > 1 ? cell : null;
         })
     );
+
+    return remove2x2Squares(trimmedGrid);
 }
 
 function BFS(grid, startingTile, endTile){
@@ -157,16 +212,17 @@ function validateDominoPath(grid, startingTile, endTile) {
         verifiedGrid = newSearch.verifiedGrid;
         foundGoal = newSearch.foundGoal;
         correctedGrid = correctPath(verifiedGrid, startingTile, endTile);
+        printGrid(correctedGrid);
     }
 
     if (foundGoal) {
         score = calculateScore(verifiedGrid);
-        // printGrid(verifiedGrid, "SUCCESS");
+        printGrid(verifiedGrid, "SUCCESS");
         return { verifiedGrid, score};
     } else {
         score = 0;
         verifiedGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
-        // printGrid(verifiedGrid, "FAILURE");
+        printGrid(verifiedGrid, "FAILURE");
         return { verifiedGrid, score };
     }
 
