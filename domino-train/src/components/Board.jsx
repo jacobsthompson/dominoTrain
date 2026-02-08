@@ -12,9 +12,7 @@ function Board({grid}){
                             className="cell"
                             key={`${x}-${y}`}
                             style={{ width: CELL_SIZE, height: CELL_SIZE }}
-                        >
-                            {cell !== null ? cell.value : ''}
-                        </div>
+                        />
                     ))}
                 </div>
             ))}

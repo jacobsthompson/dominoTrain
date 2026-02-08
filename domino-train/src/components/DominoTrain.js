@@ -3,6 +3,7 @@ import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./constants";
 import Board from "./Board";
 import DominoHolder from "./DominoHolder";
 import validateDominoPath from "./validateDFS";
+import DominoPips from "./DominoPips";
 import './style.css';
 
 function DominoTrain() {
@@ -13,6 +14,7 @@ function DominoTrain() {
     const [grid, setGrid] = useState(Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null)));
     const [validatedGrid, setValidatedGrid] = useState(null);
     const [score, setScore] = useState(null);
+    const [clearBoard, setClearBoard] = useState(0);
 
     const printGrid = () => {
         console.log('=== Current Grid State ===');
@@ -54,7 +56,6 @@ function DominoTrain() {
         }
         setGrid(newGrid);
         setValidatedGrid(null);
-        setScore(null);
         return true;
     };
 
@@ -66,7 +67,6 @@ function DominoTrain() {
         );
         setGrid(newGrid);
         setValidatedGrid(null);
-        setScore(null);
     };
 
     const handleValidation = () => {
@@ -75,8 +75,11 @@ function DominoTrain() {
         setScore(score);
     }
 
-    const clearBoard = () => {
-
+    const handleClearBoard = () => {
+        const clearedGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
+        setGrid(clearedGrid);
+        setValidatedGrid(null);
+        setClearBoard(prev => prev + 1);
     }
 
     return (
@@ -88,33 +91,34 @@ function DominoTrain() {
                     <Board grid={grid}/>
                     <div className="starting-tile" id="start-tile"
                          style={{
-                             left: startingTile.row * GRID_WIDTH + 1 - CELL_SIZE,
+                             left: startingTile.row * GRID_WIDTH - CELL_SIZE,
                              top: startingTile.col * CELL_SIZE + 1,
                              width: CELL_SIZE,
                              height: CELL_SIZE
                          }}>
-                        <div className="starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                            {startingTile.value}
+                        <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
+                            <DominoPips value={startingTile.value} color={'black'}/>
                         </div>
                     </div>
                     <div className="starting-tile" id="end-tile"
                          style={{
-                             left: endTile.row * CELL_SIZE + 1 + CELL_SIZE,
+                             left: endTile.row * CELL_SIZE + 2 + CELL_SIZE,
                              top: endTile.col * CELL_SIZE + 1,
                              width: CELL_SIZE,
                              height: CELL_SIZE
                          }}>
-                        <div className="starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                            {endTile.value}
+                        <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
+                            <DominoPips value={endTile.value} color={'black'}/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div>
-                <button className="button" onClick={printGrid} style={{marginBottom: 10}}>Print Grid</button>
-                <button className="button" onClick={handleValidation} style={{marginBottom: 10}}>Test Run</button>
+            <div className="button-wrapper">
+                <button className="button" onClick={handleClearBoard}>Clear Grid</button>
+                <button className="button" onClick={printGrid}>Print Grid</button>
+                <button className="button" onClick={handleValidation}>Test Run</button>
             </div>
-            <DominoHolder count={startingDominoCount} onPlacement={handlePlacement} onRemoval={handleRemoval} validatedGrid={validatedGrid}/>
+            <DominoHolder count={startingDominoCount} onPlacement={handlePlacement} onRemoval={handleRemoval} clearBoard={clearBoard} validatedGrid={validatedGrid}/>
         </div>
     );
 }

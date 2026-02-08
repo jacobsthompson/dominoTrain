@@ -1,0 +1,56 @@
+.domino-pip-container {
+    width: 70%;
+    height: 70%;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 4px;
+}
+
+.pip {
+    width: 8px;
+    height: 8px;
+    background-color: black;
+    border-radius: 50%;
+    position: absolute;
+}
+
+/* Position pips in a 3x3 grid */
+.pip-top-left {
+    top: 15%;
+    left: 15%;
+}
+
+.pip-top-right {
+    top: 15%;
+    right: 15%;
+}
+
+.pip-middle-left {
+    top: 50%;
+    left: 15%;
+    transform: translateY(-50%);
+}
+
+.pip-center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.pip-middle-right {
+    top: 50%;
+    right: 15%;
+    transform: translateY(-50%);
+}
+
+.pip-bottom-left {
+    bottom: 15%;
+    left: 15%;
+}
+
+.pip-bottom-right {
+    bottom: 15%;
+    right: 15%;
+}

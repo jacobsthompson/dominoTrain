@@ -1,8 +1,9 @@
 import {useEffect, useRef, useState} from "react";
+import DominoPips from "./DominoPips";
 import {CELL_SIZE} from "./constants";
 import './style.css'
 
-function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
+function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clearBoard}){
     const [position, setPosition] = useState({x:0,y:0});
     const [rotation, setRotation]= useState(0);
     const [isPlaced, setIsPlaced] = useState(false);
@@ -15,6 +16,18 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
     const dragOffsetRef = useRef({x:0,y:0})
 
     const currentMousePos = useRef({x: 0, y: 0});
+
+    useEffect(() => {
+        if(clearBoard !== undefined && clearBoard > 0){
+            setPosition({x: 0, y: 0});
+            setIsPlaced(false);
+            setRotation(0);
+        }
+        if(dominoRef.current){
+            dominoRef.current.style.left = '0px';
+            dominoRef.current.style.top = '0px';
+        }
+    }, [clearBoard]);
 
     useEffect(() => {
         rotationRef.current = rotation;
@@ -76,14 +89,15 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
 
     useEffect(() => {
         const handleMouseMove = (e) => {
-
-            currentMousePos.current = {x: e.clientX, y: e.clientY}
-
             if (isDraggingRef.current && dominoRef.current){
+                const clientX = e.clientX || e.touches?.[0]?.clientX;
+                const clientY = e.clientY || e.touches?.[0]?.clientY;
+
+                currentMousePos.current = {x: clientX, y: clientY}
                 const dragOffset = dragOffsetRef.current;
 
-                const newX = e.clientX - dragOffset.x;
-                const newY = e.clientY - dragOffset.y;
+                const newX = clientX - dragOffset.x;
+                const newY = clientY - dragOffset.y;
 
                 dominoRef.current.style.left = `${newX}px`;
                 dominoRef.current.style.top = `${newY}px`;
@@ -91,8 +105,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
         };
 
         const handleMouseUp = (e) => {
-            if (e.button !== 0) return;
-
+            if (e.button !== 0 && e.type === 'mouseup') return;
             if (!isDraggingRef.current) return;
 
             isDraggingRef.current = false;
@@ -164,16 +177,24 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
         document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('touchmove', handleMouseMove);
+        document.addEventListener('touchend', handleMouseUp);
 
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
             document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('touchmove', handleMouseMove);
+            document.removeEventListener('touchend', handleMouseUp);
         };
     }, [id,value1,value2,onPlacement,isPlaced]);
 
     const handleMouseDown = (e) => {
-        if (e.button !== 0) return;
+        if (e.button !== 0 && e.type === 'mousedown') return;
+
+        if(e.type === 'touchstart'){
+            e.preventDefault();
+        }
 
         if (isPlaced && onPickup) {
             onPickup(id);
@@ -185,13 +206,17 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
 
         const { shiftX, shiftY} = recenterPointer(e);
 
+
+        const clientX = e.clientX || e.touches?.[0]?.clientX;
+        const clientY = e.clientY || e.touches?.[0]?.clientY;
+
         dragOffsetRef.current = {
-            x: e.clientX - position.x - shiftX,
-            y: e.clientY - position.y - shiftY
+            x: clientX - position.x - shiftX,
+            y: clientY - position.y - shiftY
         };
 
-        const newX = e.clientX - dragOffsetRef.current.x;
-        const newY = e.clientY - dragOffsetRef.current.y;
+        const newX = clientX - dragOffsetRef.current.x;
+        const newY = clientY - dragOffsetRef.current.y;
 
         if(dominoRef.current) {
             dominoRef.current.style.left = `${newX}px`;
@@ -272,12 +297,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
 
     const getDominoColor = () => {
         const isValid = checkValidity();
-        if(!isPlaced){
-            return '#ccc';
-        }
-        if(isValid === null){
-            return '#ccc';
-        }
+        if(!isPlaced || isValid === null){ return '#191919'; }
         return isValid ? '#4CAF50' : '#f44336';
     }
 
@@ -292,6 +312,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
                 className="domino"
                 ref={dominoRef}
                 onMouseDown={handleMouseDown}
+                onTouchStart={handleMouseDown}
                 onContextMenu={handleContextMenu}
                 onKeyDown={handleKeyDown}
                 style={{
@@ -299,7 +320,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
                     height: height,
                     left: position.x,
                     top: position.y,
-                    backgroundColor: getDominoColor(),
+                    backgroundColor: '#f8f8ff',
                     cursor: isPlaced ? 'default' : 'grab',
                     zIndex: isDraggingVisual ? 1000 : 1,
                     flexDirection: isVertical ? 'column' : 'row',
@@ -307,23 +328,25 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid}){
                 }}
             >
                 <div
-                    className="top-half-domino"
+                    className="domino-half top-half-domino"
                     style={{
                         width: CELL_SIZE,
                         height: CELL_SIZE,
-                        borderRadius: isVertical ? '8px 8px 0 0': '8px 0 0 8px'
+                        borderRadius: isVertical ? '8px 8px 0 0': '8px 0 0 8px',
+                        borderStyle: isVertical ? "none" : "none none solid none"
                     }}
                 >
-                    {topvalue}
+                    <DominoPips value={topvalue} color={getDominoColor()}/>
                 </div>
+                <div className="domino-divider"/>
                 <div
-                    className="bot-half-domino"
+                    className="domino-half bot-half-domino"
                     style={{
                         width: CELL_SIZE,
                         height: CELL_SIZE,
                         borderRadius: isVertical ? ' 0 0 8px 8px': '0 8px 8px 0'
                     }}>
-                    {botvalue}
+                     <DominoPips value={botvalue} color={getDominoColor()}/>
                 </div>
             </div>
         </div>

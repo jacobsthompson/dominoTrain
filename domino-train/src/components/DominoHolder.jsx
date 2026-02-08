@@ -1,9 +1,9 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Domino from "./Domino";
 import './style.css'
 import {CELL_SIZE} from "./constants";
 
-function DominoHolder({count, onPlacement, onRemoval, validatedGrid}){
+function DominoHolder({count, onPlacement, onRemoval, validatedGrid, clearBoard}){
     const [dominos] = useState(() => {
         return Array.from({length: count}, (_, i) => ({
             id: i + 1,
@@ -13,6 +13,13 @@ function DominoHolder({count, onPlacement, onRemoval, validatedGrid}){
     });
 
     const [placedDominos, setPlacedDominos] = useState(new Set());
+
+    useEffect(() => {
+        if (clearBoard !== undefined) {
+            console.log("Cleared Holder");
+            setPlacedDominos(new Set());
+        }
+    }, [clearBoard]);
 
     const handlePlacement = (dominoId, cells) => {
        const success = onPlacement(dominoId, cells);
@@ -36,7 +43,7 @@ function DominoHolder({count, onPlacement, onRemoval, validatedGrid}){
 
    return(
        <div className="domino-holder" >
-           <h3 style={{marginTop: 0}}>Available Dominos</h3>
+           <h3 style={{color: '#f8f8ff', marginTop: 0}}>Available Dominos</h3>
            <div className="domino-holder-dominos" style={{height: CELL_SIZE*2}}>
                {dominos.map(domino => (
                    <div key={domino.id} style={{position: 'relative', width: CELL_SIZE + CELL_SIZE/2, height: CELL_SIZE*2}}>
@@ -47,6 +54,7 @@ function DominoHolder({count, onPlacement, onRemoval, validatedGrid}){
                            onPlacement={handlePlacement}
                            onPickup={handlePickup}
                            validatedGrid={validatedGrid}
+                           clearBoard={clearBoard}
                        />
                    </div>
                ))}
