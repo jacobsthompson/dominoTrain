@@ -16,6 +16,8 @@ function DominoTrain() {
     const [score, setScore] = useState(null);
     const [clearBoard, setClearBoard] = useState(0);
 
+    const logo = "./DominoTrainLogo.svg";
+
     const printGrid = () => {
         console.log('=== Current Grid State ===');
         grid.forEach((row,y) => {
@@ -85,6 +87,7 @@ function DominoTrain() {
     return (
         <div className="domino-train">
             <h2 className="title-card">Domino Train</h2>
+            <img src={logo} alt="Domino Train"/>
             <h3 className="score">Score: {score === null ? '-' : score}</h3>
             <div>
                 <div className="grid">
