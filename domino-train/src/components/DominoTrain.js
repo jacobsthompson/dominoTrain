@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
-import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./constants";
+import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./Constants";
 import Board from "./Board"
 import DominoHolder from "./DominoHolder";
-import validateDominoPath from "./validateDFS";
+import validateDominoPath from "./ValidateBoard";
 import DominoPips from "./DominoPips";
 import './style.css';
 import logo from './DominoTrainLogo.svg'
@@ -39,14 +39,14 @@ function DominoTrain() {
         //check if within bounds of board
         for(const cell of cells){
             if(cell.gridX < 0 || cell.gridX >= GRID_WIDTH || cell.gridY < 0 || cell.gridY >= GRID_HEIGHT){
-                console.log("out of bounds");
+                // console.log("out of bounds");
                 return false;
             }
         }
         //check for any overlapping dominos
         for(const cell of cells) {
             if (grid[cell.gridY][cell.gridX] !== null) {
-                console.log("overlap");
+                // console.log("overlap");
                 return false;
             }
         }
@@ -93,7 +93,7 @@ function DominoTrain() {
             <h3 className="score">Score: {score === null ? '-' : score}</h3>
             <div>
                 <div className="grid">
-                    <Board grid={grid}/>
+                    <Board grid={grid} validatedGrid={validatedGrid}/>
                     <div className="starting-tile" id="start-tile"
                          style={{
                              left: startingTile.row * GRID_WIDTH - CELL_SIZE,
@@ -120,8 +120,6 @@ function DominoTrain() {
             </div>
             <div className="button-wrapper">
                 <button className="button" onClick={handleClearBoard}>Clear Grid</button>
-                <button className="button" onClick={printGrid}>Print Grid</button>
-                <button className="button" onClick={handleValidation}>Test Run</button>
             </div>
             <DominoHolder count={startingDominoCount} onPlacement={handlePlacement} onRemoval={handleRemoval} clearBoard={clearBoard} validatedGrid={validatedGrid} grid={grid}/>
         </div>

@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import DominoPips from "./DominoPips";
-import {CELL_SIZE} from "./constants";
+import {CELL_SIZE} from "./Constants";
 import './style.css'
 
 function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clearBoard, grid}){
@@ -265,7 +265,6 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
     }
 
     const handleKeyDown = (e) => {
-        // console.log(e.key);
         if (e.key === 'r') {
             handleRotation(e);
         }
@@ -278,7 +277,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
 
     const checkValidity = () => {
         if(!isPlaced || !validatedGrid){
-            return null;
+            return '#191919';
         }
 
         const board = document.getElementById('board');
@@ -292,18 +291,22 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
         const gridX = Math.floor(dominoX/CELL_SIZE);
         const gridY = Math.floor(dominoY/CELL_SIZE);
 
-        return validatedGrid[gridY]?.[gridX] !== null;
+        if(validatedGrid[gridY]?.[gridX] !== null){
+            return '#4CAF50'
+        } else {
+            return 'red'
+        }
     }
 
     const getDominoColor = () => {
-        const isValid = checkValidity();
-        if(!isPlaced || isValid === null){ return '#191919'; }
-        return isValid ? '#4CAF50' : '#f44336';
+        if(validatedGrid?.every(row => row.every(cell => cell === null))) return '#191919'
+        return checkValidity();
     }
 
     const checkPlacementEdge = (dominoSide) => {
         const {orientation} = getRotationValues(rotationRef.current);
         const board = document.getElementById('board');
+        if(!board){ return null}
         const domino = dominoRef.current;
         const boardRect = board.getBoundingClientRect();
         const dominoRect = domino.getBoundingClientRect();
@@ -361,7 +364,8 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
                         width: CELL_SIZE,
                         height: CELL_SIZE,
                         borderRadius: isVertical ? '8px 8px 0 0': '8px 0 0 8px',
-                        borderStyle: checkPlacementEdge("top") ? "none" : "none none solid none"
+                        borderStyle: isVertical ? "none" : "none none solid none",
+                        borderColor: checkPlacementEdge("top") ? "#f9f9ff" : "#ccc"
                     }}
                 >
                     <DominoPips value={topvalue} color={getDominoColor()}/>
@@ -373,7 +377,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
                         width: CELL_SIZE,
                         height: CELL_SIZE,
                         borderRadius: isVertical ? ' 0 0 8px 8px': '0 8px 8px 0',
-                        borderStyle: checkPlacementEdge("bot") ? "none" : "none none solid none"
+                        borderColor: checkPlacementEdge("bot") ? "#f9f9ff" : "#ccc"
                     }}>
                      <DominoPips value={botvalue} color={getDominoColor()}/>
                 </div>

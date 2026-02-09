@@ -1,4 +1,4 @@
-import {GRID_HEIGHT, GRID_WIDTH} from "./constants";
+import {GRID_HEIGHT, GRID_WIDTH} from "./Constants";
 
 function printGrid(grid, message) {
     console.log('=======',message,'=======');
@@ -7,7 +7,6 @@ function printGrid(grid, message) {
             if(cell === null){
                 return '.';
             }
-            // return cell;
             return cell.value;
         }).join(' ');
         console.log(`Row ${y}: ${rowString}`);
@@ -212,17 +211,16 @@ function validateDominoPath(grid, startingTile, endTile) {
         verifiedGrid = newSearch.verifiedGrid;
         foundGoal = newSearch.foundGoal;
         correctedGrid = correctPath(verifiedGrid, startingTile, endTile);
-        printGrid(correctedGrid);
     }
 
     if (foundGoal) {
         score = calculateScore(verifiedGrid);
-        printGrid(verifiedGrid, "SUCCESS");
+        // printGrid(verifiedGrid, "SUCCESS");
         return { verifiedGrid, score};
     } else {
         score = 0;
         verifiedGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
-        printGrid(verifiedGrid, "FAILURE");
+        // printGrid(verifiedGrid, "FAILURE");
         return { verifiedGrid, score };
     }
 

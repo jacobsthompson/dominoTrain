@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import Domino from "./Domino";
 import './style.css'
-import {CELL_SIZE} from "./constants";
+import {CELL_SIZE} from "./Constants";
 
 function DominoHolder({count, onPlacement, onRemoval, validatedGrid, grid, clearBoard}){
     const [dominos] = useState(() => {
@@ -16,7 +16,7 @@ function DominoHolder({count, onPlacement, onRemoval, validatedGrid, grid, clear
 
     useEffect(() => {
         if (clearBoard !== undefined) {
-            console.log("Cleared Holder");
+            // console.log("Cleared Holder");
             setPlacedDominos(new Set());
         }
     }, [clearBoard]);
