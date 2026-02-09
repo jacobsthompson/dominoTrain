@@ -1,12 +1,11 @@
 import {useEffect, useState} from "react";
 import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./constants";
-// import Board from "./Board";
-import Board from "./Board1"
-// import DominoHolder from "./DominoHolder";
-import DominoHolder from "./DominoHolder1";
+import Board from "./Board"
+import DominoHolder from "./DominoHolder";
 import validateDominoPath from "./validateDFS";
 import DominoPips from "./DominoPips";
 import './style.css';
+import logo from './DominoTrainLogo.svg'
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", col: Math.floor(GRID_HEIGHT/2), row: 0, x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -17,8 +16,6 @@ function DominoTrain() {
     const [validatedGrid, setValidatedGrid] = useState(null);
     const [score, setScore] = useState(null);
     const [clearBoard, setClearBoard] = useState(0);
-
-    const logo = "./DominoTrainLogo.png";
 
     useEffect(() => {
         handleValidation();
@@ -92,8 +89,7 @@ function DominoTrain() {
 
     return (
         <div className="domino-train">
-            <h2 className="title-card">Daily Dominos</h2>
-            <img src={logo} alt="Domino Train"/>
+            <img src={logo} className="logo" alt="Domino Train" width="300"/>
             <h3 className="score">Score: {score === null ? '-' : score}</h3>
             <div>
                 <div className="grid">
@@ -127,7 +123,7 @@ function DominoTrain() {
                 <button className="button" onClick={printGrid}>Print Grid</button>
                 <button className="button" onClick={handleValidation}>Test Run</button>
             </div>
-            <DominoHolder count={startingDominoCount} onPlacement={handlePlacement} onRemoval={handleRemoval} clearBoard={clearBoard} validatedGrid={validatedGrid}/>
+            <DominoHolder count={startingDominoCount} onPlacement={handlePlacement} onRemoval={handleRemoval} clearBoard={clearBoard} validatedGrid={validatedGrid} grid={grid}/>
         </div>
     );
 }

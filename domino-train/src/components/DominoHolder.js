@@ -1,10 +1,9 @@
 import {useEffect, useState} from "react";
-// import Domino from "./Domino";
-import Domino from "./Domino1";
+import Domino from "./Domino";
 import './style.css'
 import {CELL_SIZE} from "./constants";
 
-function DominoHolder({count, onPlacement, onRemoval, validatedGrid, clearBoard}){
+function DominoHolder({count, onPlacement, onRemoval, validatedGrid, grid, clearBoard}){
     const [dominos] = useState(() => {
         return Array.from({length: count}, (_, i) => ({
             id: i + 1,
@@ -55,6 +54,7 @@ function DominoHolder({count, onPlacement, onRemoval, validatedGrid, clearBoard}
                            onPlacement={handlePlacement}
                            onPickup={handlePickup}
                            validatedGrid={validatedGrid}
+                           grid={grid}
                            clearBoard={clearBoard}
                        />
                    </div>

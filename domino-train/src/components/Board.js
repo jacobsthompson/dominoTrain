@@ -1,4 +1,3 @@
-import {memo} from "react";
 import {CELL_SIZE} from "./constants";
 import './style.css'
 
@@ -20,4 +19,4 @@ function Board({grid}){
     );
 }
 
-export default memo(Board);
+export default Board;

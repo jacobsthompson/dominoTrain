@@ -3,7 +3,7 @@ import DominoPips from "./DominoPips";
 import {CELL_SIZE} from "./constants";
 import './style.css'
 
-function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clearBoard}){
+function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clearBoard, grid}){
     const [position, setPosition] = useState({x:0,y:0});
     const [rotation, setRotation]= useState(0);
     const [isPlaced, setIsPlaced] = useState(false);
@@ -301,6 +301,34 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
         return isValid ? '#4CAF50' : '#f44336';
     }
 
+    const checkPlacementEdge = (dominoSide) => {
+        const {orientation} = getRotationValues(rotationRef.current);
+        const board = document.getElementById('board');
+        const domino = dominoRef.current;
+        const boardRect = board.getBoundingClientRect();
+        const dominoRect = domino.getBoundingClientRect();
+
+        const dominoX = dominoRect.left + CELL_SIZE/2 - boardRect.left;
+        const dominoY = dominoRect.top + CELL_SIZE/2 - boardRect.top;
+
+        const gridX = Math.floor(dominoX/CELL_SIZE);
+        const gridY = Math.floor(dominoY/CELL_SIZE);
+
+        if(orientation === 'v'){
+            if(dominoSide === 'bot'){
+                return grid[gridY+2]?.[gridX] !== null && grid[gridY+2]?.[gridX] !== undefined;
+            } else {
+                return true;
+            }
+        } else {
+            if(dominoSide === 'top'){
+                return grid[gridY+1]?.[gridX] !== null && grid[gridY+1]?.[gridX] !== undefined;
+            } else {
+                return grid[gridY+1]?.[gridX+1] !== null && grid[gridY+1]?.[gridX+1] !== undefined;
+            }
+        }
+    }
+
     const {orientation, topvalue, botvalue} = getRotationValues(rotation);
     const isVertical = orientation === 'v';
     const width = isVertical ? CELL_SIZE : CELL_SIZE * 2;
@@ -333,7 +361,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
                         width: CELL_SIZE,
                         height: CELL_SIZE,
                         borderRadius: isVertical ? '8px 8px 0 0': '8px 0 0 8px',
-                        borderStyle: isVertical ? "none" : "none none solid none"
+                        borderStyle: checkPlacementEdge("top") ? "none" : "none none solid none"
                     }}
                 >
                     <DominoPips value={topvalue} color={getDominoColor()}/>
@@ -344,7 +372,8 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
                     style={{
                         width: CELL_SIZE,
                         height: CELL_SIZE,
-                        borderRadius: isVertical ? ' 0 0 8px 8px': '0 8px 8px 0'
+                        borderRadius: isVertical ? ' 0 0 8px 8px': '0 8px 8px 0',
+                        borderStyle: checkPlacementEdge("bot") ? "none" : "none none solid none"
                     }}>
                      <DominoPips value={botvalue} color={getDominoColor()}/>
                 </div>

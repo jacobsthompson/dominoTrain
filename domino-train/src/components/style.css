@@ -23,6 +23,11 @@
     -ms-user-select: none;
 }
 
+.logo {
+    margin: 20px;
+    filter: invert(100%);
+}
+
 .title-card {
     color: #f8f8ff;
     font-size: 36px;
@@ -54,13 +59,13 @@
 
 .board {
     display: inline-block;
-    border: 1px outset #555;
+    border: 1px outset #aaa;
     background-color: #191919;
     position: relative;
 }
 
 .cell {
-    border: 1px inset #444;
+    border: 1px inset #555;
     box-sizing: border-box;
 }
 
