@@ -1,7 +1,9 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./constants";
-import Board from "./Board";
-import DominoHolder from "./DominoHolder";
+// import Board from "./Board";
+import Board from "./Board1"
+// import DominoHolder from "./DominoHolder";
+import DominoHolder from "./DominoHolder1";
 import validateDominoPath from "./validateDFS";
 import DominoPips from "./DominoPips";
 import './style.css';
@@ -16,7 +18,11 @@ function DominoTrain() {
     const [score, setScore] = useState(null);
     const [clearBoard, setClearBoard] = useState(0);
 
-    const logo = "./DominoTrainLogo.svg";
+    const logo = "./DominoTrainLogo.png";
+
+    useEffect(() => {
+        handleValidation();
+    }, [grid]);
 
     const printGrid = () => {
         console.log('=== Current Grid State ===');
@@ -86,7 +92,7 @@ function DominoTrain() {
 
     return (
         <div className="domino-train">
-            <h2 className="title-card">Domino Train</h2>
+            <h2 className="title-card">Daily Dominos</h2>
             <img src={logo} alt="Domino Train"/>
             <h3 className="score">Score: {score === null ? '-' : score}</h3>
             <div>
