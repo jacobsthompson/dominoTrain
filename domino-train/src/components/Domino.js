@@ -1,11 +1,12 @@
 import {useEffect, useRef, useState} from "react";
 import DominoPips from "./DominoPips";
-import {CELL_SIZE} from "./Constants";
+import {CELL_SIZE, HOLDER_SCALING} from "./Constants";
 import './style.css'
+import {soundGenerator} from "./SoundEffects";
 
 function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clearBoard, grid}){
     const [position, setPosition] = useState({x:0,y:0});
-    const [rotation, setRotation]= useState(0);
+    const [rotation, setRotation]= useState(270);
     const [isPlaced, setIsPlaced] = useState(false);
     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
 
@@ -21,7 +22,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
         if(clearBoard !== undefined && clearBoard > 0){
             setPosition({x: 0, y: 0});
             setIsPlaced(false);
-            setRotation(0);
+            setRotation(270);
         }
         if(dominoRef.current){
             dominoRef.current.style.left = '0px';
@@ -61,7 +62,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
                 };
             default:
                 return{
-                    orientation: 'v',
+                    orientation: 'h',
                     topvalue: value1,
                     botvalue: value2
                 };
@@ -163,14 +164,16 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
                   dominoRef.current.style.left = `${snappedX}px`;
                   dominoRef.current.style.top = `${snappedY}px`;
                 }
+                soundGenerator.playPutDown();
                 setIsPlaced(true);
             } else {
                 setPosition({x:0,y:0});
-                setRotation(0);
+                setRotation(270);
                 if (dominoRef.current) {
                   dominoRef.current.style.left = '0px';
                   dominoRef.current.style.top = '0px';
                 }
+                soundGenerator.playError();
             }
         };
 
@@ -223,6 +226,8 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
             dominoRef.current.style.top = `${newY}px`;
             dominoRef.current.style.cursor = 'grabbing';
         }
+
+        soundGenerator.playPickup();
     };
 
     const handleRotation = () => {
@@ -261,6 +266,7 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
 
             setPosition({x: newLeft, y: newTop});
             setRotation(newRotation);
+            soundGenerator.playRotate();
         }
     }
 
@@ -304,9 +310,13 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
     }
 
     const checkPlacementEdge = (dominoSide) => {
-        const {orientation} = getRotationValues(rotationRef.current);
+
+        if(!isPlaced){ return false; }
+
         const board = document.getElementById('board');
-        if(!board){ return null}
+        if(!board){ return null }
+
+        const {orientation} = getRotationValues(rotationRef.current);
         const domino = dominoRef.current;
         const boardRect = board.getBoundingClientRect();
         const dominoRect = domino.getBoundingClientRect();
@@ -347,39 +357,40 @@ function Domino({id, value1, value2, onPlacement, onPickup, validatedGrid, clear
                 onContextMenu={handleContextMenu}
                 onKeyDown={handleKeyDown}
                 style={{
-                    width: width,
-                    height: height,
+                    width: (isPlaced || isDraggingVisual) ? width : width * HOLDER_SCALING,
+                    height: (isPlaced || isDraggingVisual) ? height : height * HOLDER_SCALING,
                     left: position.x,
                     top: position.y,
                     backgroundColor: '#f8f8ff',
                     cursor: isPlaced ? 'default' : 'grab',
                     zIndex: isDraggingVisual ? 1000 : 1,
                     flexDirection: isVertical ? 'column' : 'row',
-                    boxShadow: isDraggingVisual ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
+                    boxShadow: isDraggingVisual ? '0 2px 8px rgba(255,255,200,0.5)' : 'none',
+                    transform: (isPlaced || isDraggingVisual) ? 'scale(1.0)' : 'scale('+HOLDER_SCALING.toString()+')'
                 }}
             >
                 <div
                     className="domino-half top-half-domino"
                     style={{
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
+                        width: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
+                        height: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
                         borderRadius: isVertical ? '8px 8px 0 0': '8px 0 0 8px',
                         borderStyle: isVertical ? "none" : "none none solid none",
                         borderColor: checkPlacementEdge("top") ? "#f9f9ff" : "#ccc"
                     }}
                 >
-                    <DominoPips value={topvalue} color={getDominoColor()}/>
+                    <DominoPips value={topvalue} color={getDominoColor()} inHolder={!(isPlaced || isDraggingVisual)}/>
                 </div>
                 <div className="domino-divider"/>
                 <div
                     className="domino-half bot-half-domino"
                     style={{
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
+                        width: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
+                        height: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
                         borderRadius: isVertical ? ' 0 0 8px 8px': '0 8px 8px 0',
                         borderColor: checkPlacementEdge("bot") ? "#f9f9ff" : "#ccc"
                     }}>
-                     <DominoPips value={botvalue} color={getDominoColor()}/>
+                     <DominoPips value={botvalue} color={getDominoColor()} inHolder={!(isPlaced || isDraggingVisual)}/>
                 </div>
             </div>
         </div>

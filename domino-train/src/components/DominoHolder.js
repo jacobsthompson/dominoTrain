@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import Domino from "./Domino";
 import './style.css'
-import {CELL_SIZE} from "./Constants";
+import {CELL_SIZE, HOLDER_SCALING} from "./Constants";
 
 function DominoHolder({count, onPlacement, onRemoval, validatedGrid, grid, clearBoard}){
     const [dominos] = useState(() => {
@@ -43,10 +43,10 @@ function DominoHolder({count, onPlacement, onRemoval, validatedGrid, grid, clear
 
    return(
        <div className="domino-holder" >
-           <h3 style={{color: '#f8f8ff', marginTop: 0}}>Available Dominos</h3>
-           <div className="domino-holder-dominos" style={{height: CELL_SIZE*2}}>
+           {/*<h3 style={{color: '#f8f8ff', marginTop: 0}}>Available Dominos</h3>*/}
+           <div className="domino-holder-dominos">
                {dominos.map(domino => (
-                   <div key={domino.id} style={{position: 'relative', width: CELL_SIZE + CELL_SIZE/2, height: CELL_SIZE*2}}>
+                   <div key={domino.id} style={{position: 'relative', width: CELL_SIZE*2*HOLDER_SCALING, height: CELL_SIZE*HOLDER_SCALING}}>
                        <Domino
                            id={domino.id}
                            value1={domino.value1}

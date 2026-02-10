@@ -1,6 +1,6 @@
 import './pips.css'
 
-function DominoPips({ value, color }){
+function DominoPips({ value, color, inHolder }){
     const renderPips = () => {
         const pipLocations = {
             1: ['center'],
@@ -14,7 +14,15 @@ function DominoPips({ value, color }){
         const positions = pipLocations[value] || [];
 
         return positions.map((pos, index) =>(
-            <div key={index} className={`pip pip-${pos}`} style={{backgroundColor: color}}/>
+            <div
+                key={index}
+                className={`pip pip-${pos}`}
+                style={{
+                    backgroundColor: color,
+                    width: inHolder ? '7px' : '8px',
+                    height: inHolder ? '7px' : '8px',
+                }}
+            />
         ));
     };
 

@@ -5,7 +5,10 @@ import DominoHolder from "./DominoHolder";
 import validateDominoPath from "./ValidateBoard";
 import DominoPips from "./DominoPips";
 import './style.css';
-import logo from './DominoTrainLogo.svg'
+import logo from '../assets/DominoTrainLogo.svg'
+import clearButton from '../assets/ClearBoard.svg'
+import Scoreboard from "./Scoreboard";
+import {soundGenerator} from "./SoundEffects";
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", col: Math.floor(GRID_HEIGHT/2), row: 0, x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -20,6 +23,15 @@ function DominoTrain() {
     useEffect(() => {
         handleValidation();
     }, [grid]);
+
+    useEffect(() => {
+        const initAudio = () => {
+            soundGenerator.init();
+            document.removeEventListener('click', initAudio);
+        };
+        document.addEventListener('click', initAudio);
+        return () => document.removeEventListener('click', initAudio);
+    }, []);
 
     const printGrid = () => {
         console.log('=== Current Grid State ===');
@@ -77,20 +89,22 @@ function DominoTrain() {
     const handleValidation = () => {
         const { verifiedGrid, score } = validateDominoPath(grid, startingTile, endTile);
         setValidatedGrid(verifiedGrid);
-        setScore(score);
+        if(score > 0) setScore(score);
     }
 
     const handleClearBoard = () => {
         const clearedGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
         setGrid(clearedGrid);
+        setScore(0);
         setValidatedGrid(null);
         setClearBoard(prev => prev + 1);
+        soundGenerator.playClear();
     }
 
     return (
         <div className="domino-train">
             <img src={logo} className="logo" alt="Domino Train" width="300"/>
-            <h3 className="score">Score: {score === null ? '-' : score}</h3>
+            {/*<h3 className="score">Score: {score === null ? '-' : score}</h3>*/}
             <div>
                 <div className="grid">
                     <Board grid={grid} validatedGrid={validatedGrid}/>
@@ -102,7 +116,7 @@ function DominoTrain() {
                              height: CELL_SIZE
                          }}>
                         <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                            <DominoPips value={startingTile.value} color={'black'}/>
+                            <DominoPips value={startingTile.value} color={'black'} inHolder={false}/>
                         </div>
                     </div>
                     <div className="starting-tile" id="end-tile"
@@ -113,13 +127,17 @@ function DominoTrain() {
                              height: CELL_SIZE
                          }}>
                         <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                            <DominoPips value={endTile.value} color={'black'}/>
+                            <DominoPips value={endTile.value} color={'black'} inHolder={false}/>
                         </div>
                     </div>
                 </div>
             </div>
             <div className="button-wrapper">
-                <button className="button" onClick={handleClearBoard}>Clear Grid</button>
+                <Scoreboard score={score} topScore={startingDominoCount}/>
+                <img src={clearButton} onClick={handleClearBoard} alt="Clear Board" width="30"/>
+                {/*<button className="button" onClick={handleClearBoard}>*/}
+
+                {/*</button>*/}
             </div>
             <DominoHolder count={startingDominoCount} onPlacement={handlePlacement} onRemoval={handleRemoval} clearBoard={clearBoard} validatedGrid={validatedGrid} grid={grid}/>
         </div>
