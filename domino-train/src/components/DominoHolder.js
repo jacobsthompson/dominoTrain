@@ -3,47 +3,35 @@ import Domino from "./Domino";
 import './style.css'
 import {CELL_SIZE, HOLDER_SCALING} from "./Constants";
 
-function DominoHolder({count, onPlacement, onRemoval, validatedGrid, grid, clearBoard}){
+function shuffle(arr) {
+  	for (let i = arr.length - 1; i > 0; i--) {
+    	const j = Math.floor(Math.random() * (i + 1));
+    	[arr[i], arr[j]] = [arr[j], arr[i]];
+  	}
+  	return arr;
+}
+
+function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedGrid, clearBoard}){
     const [dominos] = useState(() => {
-        return Array.from({length: count}, (_, i) => ({
+        let generatedDominos = Array.from({length: count}, (_, i) => ({
             id: i + 1,
-            value1: Math.floor(Math.random() * 6) + 1,
-            value2: Math.floor(Math.random() * 6) + 1
+            value1: solution[i*2],
+            value2: solution[i*2+1]
         }));
+        console.log(generatedDominos);
+        return generatedDominos;
     });
 
-    const [placedDominos, setPlacedDominos] = useState(new Set());
-
-    useEffect(() => {
-        if (clearBoard !== undefined) {
-            // console.log("Cleared Holder");
-            setPlacedDominos(new Set());
-        }
-    }, [clearBoard]);
-
     const handlePlacement = (dominoId, cells) => {
-       const success = onPlacement(dominoId, cells);
-
-       if (success){
-           setPlacedDominos(prev => new Set([...prev, dominoId]));
-       }
-
-       return success;
+       return onPlacement(dominoId, cells);
     };
 
     const handlePickup = (dominoId) => {
-        setPlacedDominos(prev => {
-            const newSet = new Set(prev);
-            newSet.delete(dominoId);
-            return newSet;
-        });
-
         onRemoval(dominoId);
     };
 
    return(
        <div className="domino-holder" >
-           {/*<h3 style={{color: '#f8f8ff', marginTop: 0}}>Available Dominos</h3>*/}
            <div className="domino-holder-dominos">
                {dominos.map(domino => (
                    <div key={domino.id} style={{position: 'relative', width: CELL_SIZE*2*HOLDER_SCALING, height: CELL_SIZE*HOLDER_SCALING}}>

@@ -15,22 +15,21 @@ function Scoreboard({score, topScore = 12}){
         const interval = setInterval(() => {
             setDisplayScore(prev => {
                 const newScore = prev + increment;
+                playSound(newScore);
 
                 if(increment > 0 && newScore > previousScore.current){
-                    playSound(newScore);
                     previousScore.current = newScore;
                 }
 
                 if((increment > 0 && newScore >= score) ||
                     (increment < 0 && newScore <= score)) {
-                    playSound(newScore);
                     setAnimating(false);
                     clearInterval(interval);
                     return score;
                 }
                 return newScore;
             });
-        }, 200);
+        }, 150);
 
         return () => clearInterval(interval);
     }, [score, displayScore]);

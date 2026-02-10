@@ -9,16 +9,32 @@ import logo from '../assets/DominoTrainLogo.svg'
 import clearButton from '../assets/ClearBoard.svg'
 import Scoreboard from "./Scoreboard";
 import {soundGenerator} from "./SoundEffects";
+import generateDominoValues from "./GenerateSolution";
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", col: Math.floor(GRID_HEIGHT/2), row: 0, x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
     const [endTile, setEndTile] = useState({dominoId: "end", col: Math.floor(GRID_HEIGHT/2), row: GRID_WIDTH-1, x: GRID_WIDTH-1, y: Math.floor(GRID_HEIGHT/2), value: Math.floor(Math.random() * 6) + 1});
     const [startingDominoCount, setStartingDominoCount] = useState(12);
+    const [solution, setSolution] = useState([]);
 
     const [grid, setGrid] = useState(Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null)));
     const [validatedGrid, setValidatedGrid] = useState(null);
     const [score, setScore] = useState(null);
     const [clearBoard, setClearBoard] = useState(0);
+
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    useEffect(() => {
+        const generateSolution = () => {
+            const { solution, start, end } = generateDominoValues(startingDominoCount);
+            setStartingTile(start);
+            setEndTile(end);
+            setSolution(solution);
+            setIsInitialized(true);
+        }
+
+        generateSolution();
+    }, []);
 
     useEffect(() => {
         handleValidation();
@@ -101,6 +117,14 @@ function DominoTrain() {
         soundGenerator.playClear();
     }
 
+    if(!isInitialized){
+        return(
+            <div className="loading">
+                <img src={logo} className="logo" alt="Domino Train" width="300"/>
+            </div>
+        )
+    }
+
     return (
         <div className="domino-train">
             <img src={logo} className="logo" alt="Domino Train" width="300"/>
@@ -139,7 +163,15 @@ function DominoTrain() {
 
                 {/*</button>*/}
             </div>
-            <DominoHolder count={startingDominoCount} onPlacement={handlePlacement} onRemoval={handleRemoval} clearBoard={clearBoard} validatedGrid={validatedGrid} grid={grid}/>
+            <DominoHolder
+                count={startingDominoCount}
+                solution={solution}
+                onPlacement={handlePlacement}
+                onRemoval={handleRemoval}
+                grid={grid}
+                validatedGrid={validatedGrid}
+                clearBoard={clearBoard}
+            />
         </div>
     );
 }
