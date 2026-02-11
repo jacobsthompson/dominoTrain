@@ -6,7 +6,6 @@ import validateDominoPath from "./ValidateBoard";
 import DominoPips from "./DominoPips";
 import './style.css';
 import logo from '../assets/DominoTrainLogo.svg'
-import clearButton from '../assets/ClearBoard.svg'
 import Scoreboard from "./Scoreboard";
 import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
