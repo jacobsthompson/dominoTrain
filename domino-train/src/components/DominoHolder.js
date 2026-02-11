@@ -19,7 +19,7 @@ function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedG
             value2: solution[i*2+1]
         }));
         console.log(generatedDominos);
-        return generatedDominos;
+        return shuffle(generatedDominos);
     });
 
     const handlePlacement = (dominoId, cells) => {

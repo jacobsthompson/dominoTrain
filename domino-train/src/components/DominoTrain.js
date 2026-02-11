@@ -12,8 +12,8 @@ import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
 
 function DominoTrain() {
-    const [startingTile, setStartingTile] = useState({dominoId: "start", col: Math.floor(GRID_HEIGHT/2), row: 0, x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
-    const [endTile, setEndTile] = useState({dominoId: "end", col: Math.floor(GRID_HEIGHT/2), row: GRID_WIDTH-1, x: GRID_WIDTH-1, y: Math.floor(GRID_HEIGHT/2), value: Math.floor(Math.random() * 6) + 1});
+    const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
+    const [endTile, setEndTile] = useState({dominoId: "end", x: GRID_WIDTH-1, y: Math.floor(GRID_HEIGHT/2), value: Math.floor(Math.random() * 6) + 1});
     const [startingDominoCount, setStartingDominoCount] = useState(12);
     const [solution, setSolution] = useState([]);
 
@@ -27,12 +27,12 @@ function DominoTrain() {
     useEffect(() => {
         const generateSolution = () => {
             const { solution, start, end } = generateDominoValues(startingDominoCount);
+            console.log(start, end);
             setStartingTile(start);
             setEndTile(end);
             setSolution(solution);
             setIsInitialized(true);
         }
-
         generateSolution();
     }, []);
 
@@ -128,41 +128,33 @@ function DominoTrain() {
     return (
         <div className="domino-train">
             <img src={logo} className="logo" alt="Domino Train" width="300"/>
-            {/*<h3 className="score">Score: {score === null ? '-' : score}</h3>*/}
-            <div>
-                <div className="grid">
-                    <Board grid={grid} validatedGrid={validatedGrid}/>
-                    <div className="starting-tile" id="start-tile"
-                         style={{
-                             left: startingTile.row * GRID_WIDTH - CELL_SIZE,
-                             top: startingTile.col * CELL_SIZE + 1,
-                             width: CELL_SIZE,
-                             height: CELL_SIZE
-                         }}>
-                        <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                            <DominoPips value={startingTile.value} color={'black'} inHolder={false}/>
-                        </div>
+            <Scoreboard score={score} topScore={startingDominoCount} side={"top"}/>
+            <div className="grid">
+                <Board grid={grid} validatedGrid={validatedGrid}/>
+                <div className="starting-tile" id="start-tile"
+                     style={{
+                         left: startingTile.x * GRID_WIDTH - CELL_SIZE,
+                         top: startingTile.y * CELL_SIZE + 1,
+                         width: CELL_SIZE,
+                         height: CELL_SIZE
+                     }}>
+                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
+                        <DominoPips value={startingTile.value} color={'black'} inHolder={false}/>
                     </div>
-                    <div className="starting-tile" id="end-tile"
-                         style={{
-                             left: endTile.row * CELL_SIZE + 2 + CELL_SIZE,
-                             top: endTile.col * CELL_SIZE + 1,
-                             width: CELL_SIZE,
-                             height: CELL_SIZE
-                         }}>
-                        <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                            <DominoPips value={endTile.value} color={'black'} inHolder={false}/>
-                        </div>
+                </div>
+                <div className="starting-tile" id="end-tile"
+                     style={{
+                         left: endTile.x * CELL_SIZE + 2 + CELL_SIZE,
+                         top: endTile.y * CELL_SIZE + 1,
+                         width: CELL_SIZE,
+                         height: CELL_SIZE
+                     }}>
+                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
+                        <DominoPips value={endTile.value} color={'black'} inHolder={false}/>
                     </div>
                 </div>
             </div>
-            <div className="button-wrapper">
-                <Scoreboard score={score} topScore={startingDominoCount}/>
-                <img src={clearButton} onClick={handleClearBoard} alt="Clear Board" width="30"/>
-                {/*<button className="button" onClick={handleClearBoard}>*/}
-
-                {/*</button>*/}
-            </div>
+            <Scoreboard score={score} topScore={startingDominoCount} side={"bot"}/>
             <DominoHolder
                 count={startingDominoCount}
                 solution={solution}
@@ -172,6 +164,7 @@ function DominoTrain() {
                 validatedGrid={validatedGrid}
                 clearBoard={clearBoard}
             />
+            <button className="button" onClick={handleClearBoard}>Clear</button>
         </div>
     );
 }

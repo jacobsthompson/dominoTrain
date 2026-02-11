@@ -1,25 +1,41 @@
 import {GRID_HEIGHT, GRID_WIDTH} from "./Constants";
 
-function generateStartEnd(startOrEnd){
+function generateStartEnd(){
     let startX = 0;
     let startY = Math.floor(Math.random() * GRID_HEIGHT);
     let startValue = Math.floor(Math.random() * 6) + 1;
 
-    if(startOrEnd === "end"){ startX = GRID_WIDTH-1; }
-    return({
-        dominoId: startOrEnd,
-        col: startY,
-        row: startX,
+    let endX = GRID_WIDTH-1;
+    let endY = Math.floor(Math.random() * GRID_HEIGHT);
+    let endValue = Math.floor(Math.random() * 6) + 1;
+    if(Math.abs(startY - endY) % 2 !== 0){
+        if(endY === GRID_HEIGHT-1){
+            endY--;
+        } else {
+            endY++;
+        }
+    }
+
+    const startTile = {
+        dominoId: "start",
         y: startY,
         x: startX,
         value: startValue
-    });
+    }
+
+    const endTile = {
+        dominoId: "end",
+        y: endY,
+        x: endX,
+        value: endValue
+    }
+
+    return({startTile, endTile});
 }
 
 function generateDominoValues(count){
     let dominoValues = [];
-    const startTile = generateStartEnd("start");
-    const endTile = generateStartEnd("end");
+    const { startTile, endTile } = generateStartEnd();
 
     dominoValues.push(startTile.value);
     for(let i = 0; i < count-1; i++){

@@ -1,15 +1,13 @@
 .scoreboard-container {
     width: 100%;
-    max-width: 420px;
-    margin: 20px 0;
+    max-width: 402px;
     position: relative;
+    margin: -3.5px 0 0 0;
 }
 
 .scoreboard {
     display: flex;
     flex-direction: row;
-    gap: 10px;
-    padding: 10px;
 }
 
 .score-domino {
@@ -41,7 +39,11 @@
 }
 
 .score-domino.filled {
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 0 10px rgb(76,175,80,0.5);
+}
+
+.score-domino.solved {
+    box-shadow: 0 0 10px rgb(255,223,0,0.5);
 }
 
 @keyframes fadeIn {

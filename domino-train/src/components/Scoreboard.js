@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import "./scoreboard.css"
 import {soundGenerator} from "./SoundEffects";
 
-function Scoreboard({score, topScore = 12}){
+function Scoreboard({side, score, topScore = 12}){
     const [displayScore, setDisplayScore] = useState(0);
     const [animating, setAnimating] = useState(false);
     const previousScore = useRef(0);
@@ -44,9 +44,19 @@ function Scoreboard({score, topScore = 12}){
                 {Array.from({length: topScore}, (_,index) => (
                     <div
                         key={index}
-                        className={`score-domino ${index < displayScore ? 'filled' : ''}`}
+                        className={`score-domino ${index < displayScore ? 'filled' : ''} ${displayScore === topScore-1 ? 'solved' : ''}`}
+                        style={{
+                            borderRadius: side === 'top' ?
+                                (index === 0 ? '4px 0 0 0px' : (index === topScore-1 ? '0px 4px 0px 0px' : '0')) :
+                                (index === 0 ? '0px 0 0 4px' : (index === topScore-1 ? '0px 0px 4px 0px' : '0'))
+                        }}
                     >
-                        <div className="score-domino-fill"/>
+                        <div
+                            className="score-domino-fill"
+                            style={{
+                                backgroundColor: index === topScore-1 ? '#FFDF00' : '#4CAF50'
+                            }}
+                        />
                     </div>
                 ))}
             </div>
