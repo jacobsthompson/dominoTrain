@@ -81,23 +81,22 @@ html, body {
 
 .board {
     display: inline-block;
-    border: 1px solid #ccc;
+    border: 0.09rem solid #ccc;
     background-color: #191919;
     position: relative;
 }
 
 .cell {
-    border: 1px inset #555;
+    border: 0.09rem inset #555;
     box-sizing: border-box;
 }
 
 .domino-holder {
     width: 100%;
-    max-width: 460px;
     margin: 40px 0 10px 0;
     padding: 20px;
-    border: 2px solid #cccccc;
-    border-radius: 8px;
+    border: 0.09rem solid #555555;
+    border-radius: 1rem;
     background-color: #333333;
     box-sizing: border-box;
 }
@@ -121,11 +120,11 @@ html, body {
     position: absolute;
     user-select: none;
     display: flex;
-    border-radius: 8px;
+    border-radius: 0.5rem;
 }
 
 .domino-half {
-    border: 3px solid #cccccc;
+    border: 0.2rem solid #cccccc;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -139,7 +138,6 @@ html, body {
 }
 
 .domino-divider {
-    width: 2px;
     background-color: #cccccc;
 }
 
@@ -154,7 +152,8 @@ html, body {
 
 .starting-tile-domino {
     background-color: #f8f8ff;
-    border-radius: 8px;
+    font-size: 15px;
+    border-radius: 0.5rem;
     border-style: none none solid none;
 }
 

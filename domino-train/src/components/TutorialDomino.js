@@ -1,14 +1,15 @@
 import {useEffect, useRef, useState} from "react";
 import DominoPips from "./DominoPips";
-import {CELL_SIZE, HOLDER_SCALING} from "./Constants";
-import './style.css'
+import {HOLDER_SCALING} from "./Constants";
 import {soundGenerator} from "./SoundEffects";
+import './modal.css'
+import './style.css'
 
-function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, validatedGrid, clearBoard, grid}){
+function TutorialDomino({CELL_SIZE}){
+    const value1 = 1;
+    const value2 = 2;
     const [position, setPosition] = useState({x:0,y:0});
-    const [gridPosition, setGridPosition] = useState({x: -1, y: -1});
     const [rotation, setRotation]= useState(270);
-    const [isPlaced, setIsPlaced] = useState(false);
     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
 
     const containerRef = useRef(null);
@@ -16,28 +17,11 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, validated
     const rotationRef = useRef(0);
     const isDraggingRef = useRef(false);
     const dragOffsetRef = useRef({x:0,y:0})
-
     const currentMousePos = useRef({x: 0, y: 0});
-
-    useEffect(() => {
-        if(clearBoard !== undefined && clearBoard > 0){
-            setPosition({x: 0, y: 0});
-            setIsPlaced(false);
-            setRotation(270);
-        }
-        if(dominoRef.current){
-            dominoRef.current.style.left = '0px';
-            dominoRef.current.style.top = '0px';
-        }
-    }, [clearBoard]);
 
     useEffect(() => {
         rotationRef.current = rotation;
     }, [rotation]);
-
-    useEffect(() => {
-        readjustPlacement();
-    }, [CELL_SIZE]);
 
     const getRotationValues = (rot) => {
         switch(rot){
@@ -120,69 +104,18 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, validated
                 dominoRef.current.style.cursor = 'grab';
             }
 
-            const board = document.getElementById('board');
-            const container = containerRef.current;
-            const domino = dominoRef.current;
-            if(!board || !container) {
-                setPosition({x:0,y:0});
-                if (dominoRef.current) {
-                  dominoRef.current.style.left = '0px';
-                  dominoRef.current.style.top = '0px';
-                }
-                return;
+            const {orientation, topvalue, botvalue} = getRotationValues(rotation);
+            const isVertical = orientation === 'v';
+            const width = isVertical ? CELL_SIZE : CELL_SIZE * 2;
+            const height = isVertical ? CELL_SIZE*2 : CELL_SIZE;
+
+            setPosition({x:0,y:0});
+
+            if (dominoRef.current) {
+                dominoRef.current.style.left = `0px`;
+                dominoRef.current.style.top = `0px`;
             }
-
-            const boardRect = board.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            const dominoRect = domino.getBoundingClientRect();
-
-            const dominoX = dominoRect.left + CELL_SIZE/2 - boardRect.left;
-            const dominoY = dominoRect.top + CELL_SIZE/2 - boardRect.top;
-
-            const gridX = Math.floor(dominoX/CELL_SIZE);
-            const gridY = Math.floor(dominoY/CELL_SIZE);
-
-            const { orientation, topvalue, botvalue} = getRotationValues(rotationRef.current);
-
-            //NEW 1x2
-            let cells = [];
-            if(orientation === 'h'){
-                cells = [
-                {gridX: gridX, gridY: gridY, value: topvalue},
-                {gridX: gridX + 1, gridY: gridY, value: botvalue}
-            ];
-            } else {
-                cells = [
-                    {gridX: gridX, gridY: gridY, value: topvalue},
-                    {gridX: gridX, gridY: gridY + 1, value: botvalue}
-                ];
-            }
-
-            const success = onPlacement(id, cells);
-
-            if(success){
-                setGridPosition({x: gridX, y: gridY});
-
-                const snappedX = boardRect.left - containerRect.left + (gridX * CELL_SIZE) + 1;
-                const snappedY = boardRect.top - containerRect.top + (gridY * CELL_SIZE) + 1;
-
-                setPosition({x:snappedX,y:snappedY});
-                if (dominoRef.current) {
-                  dominoRef.current.style.left = `${snappedX}px`;
-                  dominoRef.current.style.top = `${snappedY}px`;
-                }
-                soundGenerator.playPutDown();
-                setIsPlaced(true);
-            } else {
-                setGridPosition({x: -1, y: -1});
-                setPosition({x:0,y:0});
-                setRotation(270);
-                if (dominoRef.current) {
-                  dominoRef.current.style.left = '0px';
-                  dominoRef.current.style.top = '0px';
-                }
-                soundGenerator.playError();
-            }
+            soundGenerator.playPutDown();
         };
 
         document.addEventListener('mousemove', handleMouseMove);
@@ -198,7 +131,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, validated
             document.removeEventListener('touchmove', handleMouseMove);
             document.removeEventListener('touchend', handleMouseUp);
         };
-    }, [id,value1,value2,onPlacement,isPlaced]);
+    });
 
     const handleMouseDown = (e) => {
         if (e.button !== 0 && e.type === 'mousedown') return;
@@ -207,23 +140,17 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, validated
             e.preventDefault();
         }
 
-        if (isPlaced && onPickup) {
-            onPickup(id);
-            setIsPlaced(false);
-        }
-
         isDraggingRef.current = true;
         setIsDraggingVisual(true);
 
         const { shiftX, shiftY} = recenterPointer(e);
 
-
         const clientX = e.clientX || e.touches?.[0]?.clientX;
         const clientY = e.clientY || e.touches?.[0]?.clientY;
 
         dragOffsetRef.current = {
-            x: clientX - position.x - shiftX,
-            y: clientY - position.y - shiftY
+            x: clientX - shiftX,
+            y: clientY - shiftY
         };
 
         const newX = clientX - dragOffsetRef.current.x;
@@ -290,81 +217,13 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, validated
     };
 
 
-    const readjustPlacement = () => {
-        const board = document.getElementById('board');
-        const container = containerRef.current;
-        const domino = dominoRef.current;
-        if(!board || !container || !isPlaced) {
-            return;
-        }
-
-        const boardRect = board.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-
-        const gridX = gridPosition.x;
-        const gridY = gridPosition.y;
-
-        const adjustedX = boardRect.left - containerRect.left + (gridX * CELL_SIZE) + 1;
-        const adjustedY = boardRect.top - containerRect.top + (gridY * CELL_SIZE) + 1;
-
-        setPosition({x:adjustedX,y:adjustedY});
-        if (dominoRef.current) {
-          dominoRef.current.style.left = `${adjustedX}px`;
-          dominoRef.current.style.top = `${adjustedY}px`;
-        }
-    }
-
-    const checkValidity = () => {
-        const gridX = gridPosition.x;
-        const gridY = gridPosition.y;
-
-        if(!isPlaced || !validatedGrid || gridX === -1 || gridY === -1){
-            return '#191919';
-        }
-
-        if(validatedGrid[gridY]?.[gridX] !== null){
-            return '#4CAF50'
-        } else {
-            return 'red'
-        }
-    }
-
-    const getDominoColor = () => {
-        if(validatedGrid?.every(row => row.every(cell => cell === null))) return '#191919'
-        return checkValidity();
-    }
-
-    const checkPlacementEdge = (dominoSide) => {
-
-        if(!isPlaced){ return false; }
-
-        const gridX = gridPosition.x;
-        const gridY = gridPosition.y;
-
-        if(gridX === -1 || gridY === -1){ return false; }
-
-        if(orientation === 'v'){
-            if(dominoSide === 'bot'){
-                return grid[gridY+2]?.[gridX] !== null && grid[gridY+2]?.[gridX] !== undefined;
-            } else {
-                return true;
-            }
-        } else {
-            if(dominoSide === 'top'){
-                return grid[gridY+1]?.[gridX] !== null && grid[gridY+1]?.[gridX] !== undefined;
-            } else {
-                return grid[gridY+1]?.[gridX+1] !== null && grid[gridY+1]?.[gridX+1] !== undefined;
-            }
-        }
-    }
-
     const {orientation, topvalue, botvalue} = getRotationValues(rotation);
     const isVertical = orientation === 'v';
     const width = isVertical ? CELL_SIZE : CELL_SIZE * 2;
     const height = isVertical ? CELL_SIZE*2 : CELL_SIZE;
 
     return (
-        <div className="domino-wrapper" ref={containerRef} >
+        <div className="tutorial-domino-wrapper" ref={containerRef} >
             <div
                 className="domino"
                 ref={dominoRef}
@@ -373,44 +232,44 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, validated
                 onContextMenu={handleContextMenu}
                 onKeyDown={handleKeyDown}
                 style={{
-                    width: (isPlaced || isDraggingVisual) ? width : width * HOLDER_SCALING,
-                    height: (isPlaced || isDraggingVisual) ? height : height * HOLDER_SCALING,
-                    left: position.x,
-                    top: position.y,
+                    width: width,
+                    height: height,
+                    x: isVertical ? width/2 : 0,
+                    y: 0,
                     backgroundColor: '#f8f8ff',
                     cursor: 'grab',
                     zIndex: isDraggingVisual ? 1000 : 1,
                     flexDirection: isVertical ? 'column' : 'row',
                     boxShadow: isDraggingVisual ? '0 0.2rem 0.5rem rgba(255,255,200,0.5)' : 'none',
-                    transform: (isPlaced || isDraggingVisual) ? 'scale(1.0)' : 'scale('+HOLDER_SCALING.toString()+')'
+                    transform: isDraggingVisual ? 'scale(1.0)' : 'scale('+HOLDER_SCALING.toString()+')'
                 }}
             >
                 <div
                     className="domino-half top-half-domino"
                     style={{
-                        width: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
-                        height: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
+                        width: CELL_SIZE,
+                        height: CELL_SIZE,
                         borderRadius: isVertical ? '0.5rem 0.5rem 0 0': '0.5rem 0 0 0.5rem',
                         borderStyle: isVertical ? "none" : "none none solid none",
-                        borderColor: checkPlacementEdge("top") ? "#f9f9ff" : "#ccc"
+                        borderColor: "#ccc"
                     }}
                 >
-                    <DominoPips CELL_SIZE={CELL_SIZE} value={topvalue} color={getDominoColor()} inHolder={!(isPlaced || isDraggingVisual)}/>
+                    <DominoPips CELL_SIZE={CELL_SIZE} value={topvalue} color={'#191919'} inHolder={!isDraggingVisual}/>
                 </div>
                 <div className="domino-divider" style={{width: isVertical ?  '100%' : '0.15rem', height: isVertical ? '0.15rem' : '100%'}}/>
                 <div
                     className="domino-half bot-half-domino"
                     style={{
-                        width: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
-                        height: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
+                        width: CELL_SIZE,
+                        height: CELL_SIZE,
                         borderRadius: isVertical ? ' 0 0 0.5rem 0.5rem': '0 0.5rem 0.5rem 0',
-                        borderColor: checkPlacementEdge("bot") ? "#f9f9ff" : "#ccc"
+                        borderColor: "#ccc"
                     }}>
-                     <DominoPips CELL_SIZE={CELL_SIZE} value={botvalue} color={getDominoColor()} inHolder={!(isPlaced || isDraggingVisual)}/>
+                     <DominoPips CELL_SIZE={CELL_SIZE} value={botvalue} color={'#191919'} inHolder={!isDraggingVisual}/>
                 </div>
             </div>
         </div>
     );
 }
 
-export default Domino;
+export default TutorialDomino;

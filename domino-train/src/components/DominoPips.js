@@ -1,6 +1,6 @@
 import './pips.css'
 
-function DominoPips({ value, color, inHolder }){
+function DominoPips({ value, color, inHolder, CELL_SIZE }){
     const renderPips = () => {
         const pipLocations = {
             1: ['center'],
@@ -19,8 +19,8 @@ function DominoPips({ value, color, inHolder }){
                 className={`pip pip-${pos}`}
                 style={{
                     backgroundColor: color,
-                    width: inHolder ? '7px' : '8px',
-                    height: inHolder ? '7px' : '8px',
+                    width: inHolder ? `${(CELL_SIZE*0.9)/6.25}px` : `${CELL_SIZE/6.25}px`,
+                    height: inHolder ? `${(CELL_SIZE*0.9)/6.25}px` : `${CELL_SIZE/6.25}px`,
                 }}
             />
         ));

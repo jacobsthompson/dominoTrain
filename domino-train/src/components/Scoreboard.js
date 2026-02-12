@@ -1,8 +1,9 @@
 import {useEffect, useRef, useState} from "react";
 import "./scoreboard.css"
 import {soundGenerator} from "./SoundEffects";
+import {GRID_WIDTH} from "./Constants";
 
-function Scoreboard({side, score, topScore = 12}){
+function Scoreboard({CELL_SIZE, side, score, topScore = 12}){
     const [displayScore, setDisplayScore] = useState(0);
     const [animating, setAnimating] = useState(false);
     const previousScore = useRef(0);
@@ -39,7 +40,7 @@ function Scoreboard({side, score, topScore = 12}){
     }
 
     return (
-        <div className="scoreboard-container">
+        <div className="scoreboard-container" style={{width: CELL_SIZE * GRID_WIDTH + 2}}>
             <div className="scoreboard">
                 {Array.from({length: topScore}, (_,index) => (
                     <div
@@ -47,8 +48,8 @@ function Scoreboard({side, score, topScore = 12}){
                         className={`score-domino ${index < displayScore ? 'filled' : ''} ${displayScore === topScore-1 ? 'solved' : ''}`}
                         style={{
                             borderRadius: side === 'top' ?
-                                (index === 0 ? '4px 0 0 0px' : (index === topScore-1 ? '0px 4px 0px 0px' : '0')) :
-                                (index === 0 ? '0px 0 0 4px' : (index === topScore-1 ? '0px 0px 4px 0px' : '0'))
+                                (index === 0 ? '0.25rem 0 0 0' : (index === topScore-1 ? '0 0.25rem 0px 0' : '0')) :
+                                (index === 0 ? '0 0 0 0.25rem' : (index === topScore-1 ? '0 0px 0.25rem 0' : '0'))
                         }}
                     >
                         <div

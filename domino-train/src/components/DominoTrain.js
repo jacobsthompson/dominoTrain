@@ -9,6 +9,7 @@ import logo from '../assets/DominoTrainLogo.svg'
 import Scoreboard from "./Scoreboard";
 import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
+import {TutorialModal, WinModal} from "./Modal";
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -22,6 +23,10 @@ function DominoTrain() {
     const [clearBoard, setClearBoard] = useState(0);
 
     const [isInitialized, setIsInitialized] = useState(false);
+    const [CELL_SIZE, SET_CELL_SIZE] = useState(50);
+
+    const [isTutorialModalOpen, setIsTutorialModalOpen] = useState(false);
+    const [isWinModalOpen, setIsWinModalOpen] = useState(false);
 
     useEffect(() => {
         const generateSolution = () => {
@@ -33,6 +38,7 @@ function DominoTrain() {
             setIsInitialized(true);
         }
         generateSolution();
+        handleResize();
     }, []);
 
     useEffect(() => {
@@ -104,7 +110,8 @@ function DominoTrain() {
     const handleValidation = () => {
         const { verifiedGrid, score } = validateDominoPath(grid, startingTile, endTile);
         setValidatedGrid(verifiedGrid);
-        if(score > 0) setScore(score);
+        // if(score > 0) setScore(score);
+        setScore(score);
     }
 
     const handleClearBoard = () => {
@@ -116,6 +123,28 @@ function DominoTrain() {
         soundGenerator.playClear();
     }
 
+    const handleResize = () => {
+        if(window.innerWidth < 500){
+            SET_CELL_SIZE(40);
+        } else {
+            SET_CELL_SIZE(50);
+        }
+    }
+
+    const openTutorialModal = () => {
+        setIsTutorialModalOpen(!isTutorialModalOpen);
+    }
+
+    const openWinModal = () => {
+        setIsWinModalOpen(!isWinModalOpen);
+    }
+
+
+    useEffect(() => {
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [handleResize]);
+
     if(!isInitialized){
         return(
             <div className="loading">
@@ -126,10 +155,10 @@ function DominoTrain() {
 
     return (
         <div className="domino-train">
-            <img src={logo} className="logo" alt="Domino Train" width="300"/>
-            <Scoreboard score={score} topScore={startingDominoCount} side={"top"}/>
+            <img src={logo} className="logo" alt="Domino Train" width="250"/>
+            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"}/>
             <div className="grid">
-                <Board grid={grid} validatedGrid={validatedGrid}/>
+                <Board CELL_SIZE={CELL_SIZE} grid={grid} validatedGrid={validatedGrid}/>
                 <div className="starting-tile" id="start-tile"
                      style={{
                          left: startingTile.x * GRID_WIDTH - CELL_SIZE,
@@ -138,7 +167,7 @@ function DominoTrain() {
                          height: CELL_SIZE
                      }}>
                     <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                        <DominoPips value={startingTile.value} color={'black'} inHolder={false}/>
+                        <DominoPips CELL_SIZE={CELL_SIZE} value={startingTile.value} color={'black'} inHolder={false}/>
                     </div>
                 </div>
                 <div className="starting-tile" id="end-tile"
@@ -149,12 +178,13 @@ function DominoTrain() {
                          height: CELL_SIZE
                      }}>
                     <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                        <DominoPips value={endTile.value} color={'black'} inHolder={false}/>
+                        <DominoPips CELL_SIZE={CELL_SIZE} value={endTile.value} color={'black'} inHolder={false}/>
                     </div>
                 </div>
             </div>
-            <Scoreboard score={score} topScore={startingDominoCount} side={"bot"}/>
+            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"}/>
             <DominoHolder
+                CELL_SIZE={CELL_SIZE}
                 count={startingDominoCount}
                 solution={solution}
                 onPlacement={handlePlacement}
@@ -163,7 +193,17 @@ function DominoTrain() {
                 validatedGrid={validatedGrid}
                 clearBoard={clearBoard}
             />
-            <button className="button" onClick={handleClearBoard}>Clear</button>
+            <button className="button" onClick={openTutorialModal}>Clear</button>
+            {isTutorialModalOpen && (
+                <div>
+                    <TutorialModal CELL_SIZE={CELL_SIZE} updateCallback={openTutorialModal}/>
+                </div>
+            )}
+            {isWinModalOpen && (
+                <div>
+                    <WinModal updateCallback={openWinModal}/>
+                </div>
+            )}
         </div>
     );
 }

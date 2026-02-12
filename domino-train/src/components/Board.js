@@ -1,4 +1,3 @@
-import {CELL_SIZE} from "./Constants";
 import './style.css'
 
 function checkValidCell(grid, validatedGrid, x,y) {
@@ -14,7 +13,7 @@ function checkValidCell(grid, validatedGrid, x,y) {
     return 'none';
 }
 
-function Board({grid, validatedGrid}){
+function Board({grid, validatedGrid, CELL_SIZE}){
     return(
         <div className="board" id={"board"}>
             {grid.map((row,y) =>(
