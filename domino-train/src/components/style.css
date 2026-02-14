@@ -71,6 +71,7 @@ html, body {
     font-family: 'Karrik', sans-serif;
     padding: 5px 10px;
     margin: 10px;
+    cursor: pointer;
 }
 
 .grid {

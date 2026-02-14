@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useRef, useState} from "react";
 import Domino from "./Domino";
 import './style.css'
 import {GRID_WIDTH, HOLDER_SCALING} from "./Constants";
@@ -18,9 +18,10 @@ function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedG
             value1: solution[i*2],
             value2: solution[i*2+1]
         }));
-        console.log(generatedDominos);
         return shuffle(generatedDominos);
     });
+
+    const currentlyDraggingId = useRef(null);
 
     const handlePlacement = (dominoId, cells) => {
        return onPlacement(dominoId, cells);
@@ -28,6 +29,20 @@ function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedG
 
     const handlePickup = (dominoId) => {
         onRemoval(dominoId);
+    };
+
+    const handleDragStart = (dominoId) => {
+        if(currentlyDraggingId.current !== null && currentlyDraggingId.current !== dominoId){
+            return false;
+        }
+        currentlyDraggingId.current = dominoId;
+        return true;
+    };
+
+    const handleDragEnd = (dominoId) => {
+        if(currentlyDraggingId.current === dominoId){
+            currentlyDraggingId.current = null;
+        }
     };
 
    return(
@@ -42,6 +57,8 @@ function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedG
                            value2={domino.value2}
                            onPlacement={handlePlacement}
                            onPickup={handlePickup}
+                           onDragStart={handleDragStart}
+                           onDragEnd={handleDragEnd}
                            validatedGrid={validatedGrid}
                            grid={grid}
                            clearBoard={clearBoard}

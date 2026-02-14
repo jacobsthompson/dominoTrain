@@ -39,6 +39,7 @@ function DominoTrain() {
         }
         generateSolution();
         handleResize();
+        openTutorialModal();
     }, []);
 
     useEffect(() => {
@@ -193,15 +194,15 @@ function DominoTrain() {
                 validatedGrid={validatedGrid}
                 clearBoard={clearBoard}
             />
-            <button className="button" onClick={openTutorialModal}>Clear</button>
+            <button className="button" onClick={handleClearBoard}>Clear</button>
             {isTutorialModalOpen && (
                 <div>
-                    <TutorialModal CELL_SIZE={CELL_SIZE} updateCallback={openTutorialModal}/>
+                    <TutorialModal CELL_SIZE={CELL_SIZE} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal}/>
                 </div>
             )}
             {isWinModalOpen && (
                 <div>
-                    <WinModal updateCallback={openWinModal}/>
+                    <WinModal isModalOpen={isWinModalOpen} updateCallback={openWinModal}/>
                 </div>
             )}
         </div>

@@ -96,6 +96,10 @@ class SoundGenerator {
             this.playDomino(frequencies[score], frequencies[score]);
         }
     }
+
+    playTutorial(){
+        this.playDomino(1046.502,1046.502);
+    }
 }
 
 // Export singleton instance
