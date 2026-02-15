@@ -241,7 +241,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
                 setGridPosition({x: gridX, y: gridY});
 
                 const snappedX = boardRect.left - containerRect.left + (gridX * CELL_SIZE) + 1;
-                const snappedY = boardRect.top - containerRect.top + (gridY * CELL_SIZE) + 1;
+                const snappedY = boardRect.top - containerRect.top + (gridY * CELL_SIZE);
 
                 setPosition({x:snappedX,y:snappedY});
                 if (dominoRef.current) {
@@ -389,7 +389,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
         const gridY = gridPosition.y;
 
         const adjustedX = boardRect.left - containerRect.left + (gridX * CELL_SIZE) + 1;
-        const adjustedY = boardRect.top - containerRect.top + (gridY * CELL_SIZE) + 1;
+        const adjustedY = boardRect.top - containerRect.top + (gridY * CELL_SIZE);
 
         setPosition({x:adjustedX,y:adjustedY});
         if (dominoRef.current) {
@@ -402,20 +402,16 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
         const gridX = gridPosition.x;
         const gridY = gridPosition.y;
 
-        if(!isPlaced || !validatedGrid || gridX === -1 || gridY === -1){
-            return '#191919';
-        }
-
-        if(validatedGrid[gridY]?.[gridX] !== null){
-            return '#4CAF50'
-        } else {
-            return 'red'
-        }
+        if(!isPlaced || !validatedGrid || gridX === -1 || gridY === -1) return null;
+        return (validatedGrid[gridY]?.[gridX] !== null);
     }
 
     const getDominoColor = () => {
-        if(validatedGrid?.every(row => row.every(cell => cell === null))) return '#191919'
-        return checkValidity();
+        const validity = checkValidity();
+        if(validity === null) return '#191919';
+        if(validity === true) return '#4CAF50';
+        if(validity === false) return 'red';
+
     }
 
     const checkPlacementEdge = (dominoSide) => {

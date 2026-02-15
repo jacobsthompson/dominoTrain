@@ -1,6 +1,5 @@
 import {useEffect, useRef, useState} from "react";
 import DominoPips from "./DominoPips";
-import {CELL_SIZE, HOLDER_SCALING} from "./Constants";
 import './style.css'
 import {soundGenerator} from "./SoundEffects";
 

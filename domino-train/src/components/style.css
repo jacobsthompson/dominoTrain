@@ -82,13 +82,15 @@ html, body {
 
 .board {
     display: inline-block;
-    border: 0.09rem solid #ccc;
-    background-color: #191919;
+    border: 0.09rem #ccc;
+    border-style: none solid solid solid;
+    background-color: #555;
     position: relative;
 }
 
 .cell {
-    border: 0.09rem inset #555;
+    background-color: #191919;
+    border: 0.09rem solid #555;
     box-sizing: border-box;
 }
 

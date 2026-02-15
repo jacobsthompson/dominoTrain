@@ -1,21 +1,22 @@
 import './style.css'
 
 function checkValidCell(grid, validatedGrid, x,y) {
-    if(!validatedGrid.every(row => row.every(cell => cell === null))) {
-        if (grid[y][x] !== null) {
-            if (validatedGrid[y][x] !== null) {
-                return '0 0 9px #4CAF50'
-            } else {
-                return '0 0 9px red'
-            }
+    if (grid[y][x] !== null) {
+        if (validatedGrid[y][x] !== null) {
+            return '0 0 0.5rem #4CAF50'
+        } else {
+            return '0 0 0.5rem red'
         }
     }
-    return 'none';
 }
 
-function Board({grid, validatedGrid, CELL_SIZE}){
+function checkFullCell(grid, x, y){
+    return grid[y][x] !== null
+}
+
+function Board({grid, validatedGrid, solutionFound, CELL_SIZE}){
     return(
-        <div className="board" id={"board"}>
+        <div className="board" id={"board"} style={{boxShadow: solutionFound ? '0 0 0.5rem #4CAF50' : 'none',}}>
             {grid.map((row,y) =>(
                 <div key={y} style={{display: 'flex'}}>
                     {row.map((cell,x) => (
@@ -25,7 +26,10 @@ function Board({grid, validatedGrid, CELL_SIZE}){
                             style={{
                                 width: CELL_SIZE,
                                 height: CELL_SIZE,
-                                boxShadow: validatedGrid ? checkValidCell(grid, validatedGrid,x,y) : 'none'
+                                boxShadow: (solutionFound && validatedGrid) ? checkValidCell(grid, validatedGrid,x,y) : 'none',
+                                zIndex: checkFullCell(grid,x,y) ? 1 : 0,
+                                borderRadius: checkFullCell(grid,x,y) ? '0.5rem' : '0'
+
                             }}
                         />
                     ))}
