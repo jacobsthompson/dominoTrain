@@ -205,7 +205,7 @@ function rremove2x2Squares(grid, startingTile, endTile){
                             validAdjacentDominos[currentTile.dominoId] += 1;
                         }
                     }
-                    // console.log(currentTile, adjTiles, validAdjacentDominos[currentTile.dominoId]);
+                    // console.log(currentTile, adjTiles, validAdjacentDominos[currentTile.dominoId])
                 }
 
             }
