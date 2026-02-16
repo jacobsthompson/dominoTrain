@@ -3,7 +3,7 @@ import "./scoreboard.css"
 import {soundGenerator} from "./SoundEffects";
 import {GRID_WIDTH} from "./Constants";
 
-function Scoreboard({CELL_SIZE, side, score, topScore = 12}){
+function Scoreboard({CELL_SIZE, side, score, topScore}){
     const [displayScore, setDisplayScore] = useState(0);
     const [animating, setAnimating] = useState(false);
     const previousScore = useRef(0);

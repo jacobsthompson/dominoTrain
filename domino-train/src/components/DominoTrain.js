@@ -19,7 +19,9 @@ function DominoTrain() {
 
     const [grid, setGrid] = useState(Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null)));
     const [validatedGrid, setValidatedGrid] = useState(null);
+
     const [score, setScore] = useState(null);
+
     const [clearBoard, setClearBoard] = useState(0);
 
     const [isInitialized, setIsInitialized] = useState(false);
@@ -165,7 +167,7 @@ function DominoTrain() {
             <img src={logo} className="logo" alt="Domino Train" width="250"/>
             <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"}/>
             <div className="grid">
-                <Board CELL_SIZE={CELL_SIZE} grid={grid} solutionFound={solutionFound} validatedGrid={validatedGrid}/>
+                <Board CELL_SIZE={CELL_SIZE} grid={grid} solutionFound={solutionFound} score={score} topScore={startingDominoCount} validatedGrid={validatedGrid}/>
                 <div className="starting-tile" id="start-tile"
                      style={{
                          left: startingTile.x * GRID_WIDTH - CELL_SIZE,
@@ -187,6 +189,24 @@ function DominoTrain() {
                     <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
                         <DominoPips CELL_SIZE={CELL_SIZE} value={endTile.value} color={'black'} inHolder={false}/>
                     </div>
+                    {/*<div className="end-flag" style={{height: CELL_SIZE / 4.545}}>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
+                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
+                    {/*</div>*/}
                 </div>
             </div>
             <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"}/>

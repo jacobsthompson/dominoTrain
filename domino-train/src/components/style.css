@@ -151,6 +151,9 @@ html, body {
 .starting-tile {
     position: absolute;
     pointer-events: none;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(2, 1fr);
 }
 
 .starting-tile-domino {
@@ -160,3 +163,12 @@ html, body {
     border-style: none none solid none;
 }
 
+.end-flag {
+    background-color: #f8f8ff;
+    border: 0.1rem solid #f8f8ff;
+    /*border-radius:0 0.5rem 0.5rem 0;*/
+    /*overflow: hidden;*/
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}

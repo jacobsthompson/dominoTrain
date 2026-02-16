@@ -14,9 +14,9 @@ function checkFullCell(grid, x, y){
     return grid[y][x] !== null
 }
 
-function Board({grid, validatedGrid, solutionFound, CELL_SIZE}){
+function Board({grid, validatedGrid, solutionFound, score, topScore, CELL_SIZE}){
     return(
-        <div className="board" id={"board"} style={{boxShadow: solutionFound ? '0 0 0.5rem #4CAF50' : 'none',}}>
+        <div className="board" id={"board"} style={{boxShadow: (solutionFound && score === topScore) ? '0 0 0.5rem #4CAF50' : 'none'}}>
             {grid.map((row,y) =>(
                 <div key={y} style={{display: 'flex'}}>
                     {row.map((cell,x) => (
