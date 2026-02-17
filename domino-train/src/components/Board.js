@@ -5,7 +5,7 @@ function checkValidCell(grid, validatedGrid, x,y) {
         if (validatedGrid[y][x] !== null) {
             return '0 0 0.5rem #4CAF50'
         } else {
-            return '0 0 0.5rem red'
+            return '0 0 0.5rem #D44444'
         }
     }
 }
@@ -14,9 +14,11 @@ function checkFullCell(grid, x, y){
     return grid[y][x] !== null
 }
 
+// style={{boxShadow: (solutionFound && score === topScore) ? '0 0 0.5rem #4CAF50' : 'none'}}
+
 function Board({grid, validatedGrid, solutionFound, score, topScore, CELL_SIZE}){
     return(
-        <div className="board" id={"board"} style={{boxShadow: (solutionFound && score === topScore) ? '0 0 0.5rem #4CAF50' : 'none'}}>
+        <div className="board" id={"board"}>
             {grid.map((row,y) =>(
                 <div key={y} style={{display: 'flex'}}>
                     {row.map((cell,x) => (

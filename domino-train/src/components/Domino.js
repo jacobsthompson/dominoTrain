@@ -7,7 +7,8 @@ import {soundGenerator} from "./SoundEffects";
 function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid}){
     const [position, setPosition] = useState({x:0,y:0});
     const [gridPosition, setGridPosition] = useState({x: -1, y: -1});
-    const [rotation, setRotation]= useState(270);
+    const initialRotation = Math.random() > 0.5 ? 90 : 270;
+    const [rotation, setRotation]= useState(initialRotation);
     const [isPlaced, setIsPlaced] = useState(false);
     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
 
@@ -26,7 +27,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
         if(clearBoard !== undefined && clearBoard > 0){
             setPosition({x: 0, y: 0});
             setIsPlaced(false);
-            setRotation(270);
+            setRotation(initialRotation);
             if (isDraggingRef.current && onDragEnd) {
                 onDragEnd(id);
                 isDraggingRef.current = false;
@@ -112,65 +113,80 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
     useEffect(() => {
         const handleMouseMove = (e) => {
             if (isDraggingRef.current && dominoRef.current){
+                //TOUCH CONTROLS
                 if(e.type === 'touchmove'){
                     e.preventDefault()
-                }
 
-                //TOUCH ROTATION
+                    //TOUCH ROTATION
 
-                if(e.type === 'touchmove' && e.touches.length === 2){
-                    isRotatingRef.current = true;
+                    if(e.type === 'touchmove' && e.touches.length === 2){
+                        isRotatingRef.current = true;
 
-                    const currentAngle = getTouchAngle(e.touches[0], e.touches[1]);
+                        const currentAngle = getTouchAngle(e.touches[0], e.touches[1]);
 
-                    if(lastRotationAngle.current !== null){
-                        const angleDiff = currentAngle - lastRotationAngle.current;
+                        if(lastRotationAngle.current !== null){
+                            const angleDiff = currentAngle - lastRotationAngle.current;
 
-                        if(Math.abs(angleDiff) > neededRotationAngle){
-                            handleRotation(e, (angleDiff/Math.abs(angleDiff) * 90));
+                            if(Math.abs(angleDiff) > neededRotationAngle){
+                                handleRotation(e, (angleDiff/Math.abs(angleDiff) * 90));
+                                lastRotationAngle.current = currentAngle;
+                            }
+                        } else {
                             lastRotationAngle.current = currentAngle;
                         }
-                    } else {
-                        lastRotationAngle.current = currentAngle;
+                    }
+
+                    if(e.type === 'touchmove' && e.touches.length === 1){
+                        if (isRotatingRef.current){
+                            lastRotationAngle.current = null;
+                            isRotatingRef.current = false;
+                        }
+                    }
+
+                    //TOUCH DRAGGING
+
+                    if(e.touches.length === 1) {
+                        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+                        currentMousePos.current = {x: clientX, y: clientY}
+                        const dragOffset = dragOffsetRef.current;
+
+                        const newX = clientX - dragOffset.x;
+                        const newY = clientY - dragOffset.y;
+
+                        dominoRef.current.style.left = `${newX}px`;
+                        dominoRef.current.style.top = `${newY}px`;
+                    } else if(e.touches.length === 2){
+                        const mainX = e.touches[0].clientX;
+                        const mainY = e.touches[0].clientY;
+
+                        const secondX = e.touches[1].clientX;
+                        const secondY = e.touches[1].clientY;
+
+                        const midX = (mainX + secondX) / 2;
+                        const midY = (mainY + secondY) / 2;
+
+                        currentMousePos.current = {x: midX, y: midY}
+                        const dragOffset = dragOffsetRef.current;
+
+                        const newX = midX - dragOffset.x;
+                        const newY = midY - dragOffset.y;
+
+                        dominoRef.current.style.left = `${newX}px`;
+                        dominoRef.current.style.top = `${newY}px`;
                     }
                 }
 
-                if(e.type === 'touchmove' && e.touches.length === 1){
-                    if (isRotatingRef.current){
-                        lastRotationAngle.current = null;
-                        isRotatingRef.current = false;
-                    }
-                }
-
-                //DRAGGING
-
-                if(e.type === 'mousemove' || e.touches.length === 1) {
-                    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+                if(e.type === 'mousemove') {
+                    const clientX = e.clientX;
+                    const clientY = e.clientY;
 
                     currentMousePos.current = {x: clientX, y: clientY}
                     const dragOffset = dragOffsetRef.current;
 
                     const newX = clientX - dragOffset.x;
                     const newY = clientY - dragOffset.y;
-
-                    dominoRef.current.style.left = `${newX}px`;
-                    dominoRef.current.style.top = `${newY}px`;
-                } else if(e.type === 'touchmove' && e.touches.length === 2){
-                    const mainX = e.touches[0].clientX;
-                    const mainY = e.touches[0].clientY;
-
-                    const secondX = e.touches[1].clientX;
-                    const secondY = e.touches[1].clientY;
-
-                    const midX = (mainX + secondX) / 2;
-                    const midY = (mainY + secondY) / 2;
-
-                    currentMousePos.current = {x: midX, y: midY}
-                    const dragOffset = dragOffsetRef.current;
-
-                    const newX = midX - dragOffset.x;
-                    const newY = midY - dragOffset.y;
 
                     dominoRef.current.style.left = `${newX}px`;
                     dominoRef.current.style.top = `${newY}px`;
@@ -253,7 +269,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
             } else {
                 setGridPosition({x: -1, y: -1});
                 setPosition({x:0,y:0});
-                setRotation(270);
+                setRotation(initialRotation);
                 if (dominoRef.current) {
                   dominoRef.current.style.left = '0px';
                   dominoRef.current.style.top = '0px';
@@ -288,6 +304,8 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
             return;
         }
 
+        console.log("down");
+
         if (isPlaced && onPickup) {
             onPickup(id);
             setIsPlaced(false);
@@ -305,6 +323,9 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
 
         const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
         const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+        currentMousePos.current.x = clientX;
+        currentMousePos.current.y = clientY;
 
         dragOffsetRef.current = {
             x: clientX - position.x - shiftX,
@@ -410,7 +431,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
         const validity = checkValidity();
         if(validity === null) return '#191919';
         if(validity === true) return '#4CAF50';
-        if(validity === false) return 'red';
+        if(validity === false) return '#D44444';
 
     }
 
@@ -473,7 +494,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
                         height: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
                         borderRadius: isVertical ? '0.5rem 0.5rem 0 0': '0.5rem 0 0 0.5rem',
                         borderStyle: isVertical ? "none" : "none none solid none",
-                        borderColor: checkPlacementEdge("top") ? "#f9f9ff" : "#ccc"
+                        borderColor: checkPlacementEdge("top") ? "#f8f8ff" : "#ccc"
                     }}
                 >
                     <DominoPips CELL_SIZE={CELL_SIZE} value={topvalue} color={getDominoColor()} inHolder={!(isPlaced || isDraggingVisual)}/>
@@ -485,7 +506,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
                         width: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
                         height: (isPlaced || isDraggingVisual) ? CELL_SIZE : CELL_SIZE * HOLDER_SCALING,
                         borderRadius: isVertical ? ' 0 0 0.5rem 0.5rem': '0 0.5rem 0.5rem 0',
-                        borderColor: checkPlacementEdge("bot") ? "#f9f9ff" : "#ccc"
+                        borderColor: checkPlacementEdge("bot") ? "#f8f8ff" : "#ccc"
                     }}>
                      <DominoPips CELL_SIZE={CELL_SIZE} value={botvalue} color={getDominoColor()} inHolder={!(isPlaced || isDraggingVisual)}/>
                 </div>

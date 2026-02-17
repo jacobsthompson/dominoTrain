@@ -9,7 +9,7 @@ import logo from '../assets/DominoTrainLogo.svg'
 import Scoreboard from "./Scoreboard";
 import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
-import {TutorialModal, WinModal} from "./Modal";
+import {StartModal, TutorialModal, WinModal} from "./Modal";
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -27,6 +27,7 @@ function DominoTrain() {
     const [isInitialized, setIsInitialized] = useState(false);
     const [CELL_SIZE, SET_CELL_SIZE] = useState(50);
 
+    const [isStartModalOpen, setIsStartModalOpen] = useState(false);
     const [isTutorialModalOpen, setIsTutorialModalOpen] = useState(false);
     const [isWinModalOpen, setIsWinModalOpen] = useState(false);
 
@@ -44,7 +45,7 @@ function DominoTrain() {
         }
         generateSolution();
         handleResize();
-        openTutorialModal();
+        openStartModal();
     }, []);
 
     useEffect(() => {
@@ -140,6 +141,10 @@ function DominoTrain() {
         }
     }
 
+    const openStartModal = () => {
+        setIsStartModalOpen(!isStartModalOpen);
+    }
+
     const openTutorialModal = () => {
         setIsTutorialModalOpen(!isTutorialModalOpen);
     }
@@ -175,8 +180,8 @@ function DominoTrain() {
                          width: CELL_SIZE,
                          height: CELL_SIZE
                      }}>
-                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                        <DominoPips CELL_SIZE={CELL_SIZE} value={startingTile.value} color={'black'} inHolder={false}/>
+                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE, boxShadow: '0 0 0.5rem #4CAF50'}}>
+                        <DominoPips CELL_SIZE={CELL_SIZE} value={startingTile.value} color={'#4CAF50'} inHolder={false}/>
                     </div>
                 </div>
                 <div className="starting-tile" id="end-tile"
@@ -186,27 +191,9 @@ function DominoTrain() {
                          width: CELL_SIZE,
                          height: CELL_SIZE
                      }}>
-                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE}}>
-                        <DominoPips CELL_SIZE={CELL_SIZE} value={endTile.value} color={'black'} inHolder={false}/>
+                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE, boxShadow: solutionFound ? '0 0 0.5rem #4CAF50' : '0 0 0.5rem #D44444'}}>
+                        <DominoPips CELL_SIZE={CELL_SIZE} value={endTile.value} color={(solutionFound ? '#4CAF50' : '#D44444')} inHolder={false}/>
                     </div>
-                    {/*<div className="end-flag" style={{height: CELL_SIZE / 4.545}}>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#f8f8ff'}}/>*/}
-                    {/*    <div className="checker" style={{backgroundColor: '#191919'}}/>*/}
-                    {/*</div>*/}
                 </div>
             </div>
             <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"}/>
@@ -220,7 +207,12 @@ function DominoTrain() {
                 validatedGrid={validatedGrid}
                 clearBoard={clearBoard}
             />
-            <button className="button" onClick={handleClearBoard}>Clear</button>
+            <a className="clear-button" onClick={handleClearBoard}>Clear Board</a>
+            {isStartModalOpen && (
+                <div>
+                    <StartModal CELL_SIZE={CELL_SIZE} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
+                </div>
+            )}
             {isTutorialModalOpen && (
                 <div>
                     <TutorialModal CELL_SIZE={CELL_SIZE} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal}/>

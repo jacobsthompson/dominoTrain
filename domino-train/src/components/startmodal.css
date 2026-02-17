@@ -1,0 +1,64 @@
+.start-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #f8f8ff;
+    background-color: #191919;
+    margin: 10% auto;
+    padding: 2rem;
+    border: 1px solid #f8f8ff;
+    width: 15rem;
+    height: 20rem;
+    z-index: 100;
+}
+
+.start-text {
+    font-size: 1rem;
+    font-weight: normal;
+    margin: 0.4rem;
+}
+
+.start-header {
+    font-size: 1.7rem;
+    font-weight: bold;
+    margin: 0.4rem;
+}
+
+.start-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 15px 25px;
+    margin: 1rem 0 1rem 0;
+    border: none;
+    border-radius: 0.75rem;
+
+    font-family: 'Karrik', sans-serif;
+    font-size: 1rem;
+    color: #191919;
+    background-color: #f8f8ff;
+    cursor: pointer;
+}
+
+.how-to-play-button {
+    font-family: 'Karrik', sans-serif;
+    font-size: 0.8rem;
+    color: #aaa;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+a:hover {
+    color: #f8f8ff;
+    text-decoration: underline;
+}
+
+button:hover {
+    background-color: #f8f8ff;
+    box-shadow: 0 0 0.5rem rgba(248,248,255,1);
+}

@@ -1,10 +1,14 @@
 .modal {
     position: fixed;
+    max-height: 100vh;
     z-index: 1;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-background {
@@ -13,80 +17,18 @@
     height: 100vh;
     left: 0;
     top:0;
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(1px);
     z-index: 0;
-}
-
-.modal-content {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #f9f9ff;
-    background-color: #191919;
-    margin: 10% auto;
-    padding: 30px;
-    border: 1px solid #ffffff;
-    width: 20rem;
-    height: 30rem;
-    z-index: 100;
-}
-
-.modal-logo {
-    margin: 20px 0 20px 0;
-    filter: invert(100%);
-}
-
-.tutorial-container {
-    margin: 20px 0 20px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.tutorial-text {
-    margin: 0.4rem;
-}
-
-.tutorial-text-container {
-    width: 20rem;
-    height: 7rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.tutorial-domino-holder {
-    width: 100%;
-    margin: 20px 0 0 0;
-    border: 0.09rem solid #555555;
-    border-radius: 1rem;
-    background-color: #333333;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.tutorial-domino-container {
-    position: relative;
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-}
-
-.tutorial-domino-wrapper {
-    width: 100%;
-    height: 100%;
-    position: relative;
 }
 
 .modal-button {
     font-family: 'Karrik', sans-serif;
     padding: 5px 10px;
-    margin: 10px;
     cursor: pointer;
+}
+
+.modal-logo {
+    margin: 0 0 20px 0;
+    filter: invert(100%);
 }

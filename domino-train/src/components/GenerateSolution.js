@@ -11,8 +11,10 @@ function generateStartEnd(){
     if(Math.abs(startY - endY) % 2 !== 0){
         if(endY === GRID_HEIGHT-1){
             endY--;
-        } else {
+        } else if(endY === 0){
             endY++;
+        } else {
+            Math.random() >= 0.5 ? endY++ : endY--;
         }
     }
 
@@ -44,6 +46,15 @@ function generateDominoValues(count){
         dominoValues.push(dValue);
     }
     dominoValues.push(endTile.value);
+
+    for(let i = 0; i < count; i++){
+        const swap = Math.random() > 0.5;
+        if(swap){
+            let tempValue = dominoValues[i*2];
+            dominoValues[i*2] = dominoValues[i*2+1];
+            dominoValues[i*2+1] = tempValue;
+        }
+    }
     return { solution: dominoValues, start: startTile, end: endTile};
 }
 

@@ -3,7 +3,7 @@ import DominoPips from "./DominoPips";
 import './style.css'
 import {soundGenerator} from "./SoundEffects";
 
-function TutorialDomino({CELL_SIZE, onRotation, onFirstDown, onFirstUp, onFirstMove, onFirstRotate}){
+function TutorialDomino({CELL_SIZE, onRotation, onFirstDown, onFirstUp, onFirstMove, onFirstRotate, validPlace}){
     const value1 = 1;
     const value2 = 2;
 
@@ -222,6 +222,9 @@ function TutorialDomino({CELL_SIZE, onRotation, onFirstDown, onFirstUp, onFirstM
         const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
         const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
+        currentMousePos.current.x = clientX;
+        currentMousePos.current.y = clientY;
+
         dragOffsetRef.current = {
             x: clientX - position.x - shiftX,
             y: clientY - position.y - shiftY
@@ -330,7 +333,7 @@ function TutorialDomino({CELL_SIZE, onRotation, onFirstDown, onFirstUp, onFirstM
                         borderColor: "#ccc"
                     }}
                 >
-                    <DominoPips CELL_SIZE={CELL_SIZE} value={topvalue} color={'#191919'} inHolder={false}/>
+                    <DominoPips CELL_SIZE={CELL_SIZE} value={topvalue} color={(validPlace && !isDraggingVisual) ? '#4CAF50' : '#191919'} inHolder={false}/>
                 </div>
                 <div className="domino-divider" style={{width: isVertical ?  '100%' : '0.15rem', height: isVertical ? '0.15rem' : '100%'}}/>
                 <div
@@ -341,7 +344,7 @@ function TutorialDomino({CELL_SIZE, onRotation, onFirstDown, onFirstUp, onFirstM
                         borderRadius: isVertical ? ' 0 0 0.5rem 0.5rem': '0 0.5rem 0.5rem 0',
                         borderColor: "#ccc"
                     }}>
-                     <DominoPips CELL_SIZE={CELL_SIZE} value={botvalue} color={'#191919'} inHolder={false}/>
+                     <DominoPips CELL_SIZE={CELL_SIZE} value={botvalue} color={(validPlace && !isDraggingVisual) ? '#4CAF50' : '#191919'} inHolder={false}/>
                 </div>
             </div>
         </div>
