@@ -14,7 +14,7 @@ import {StartModal, TutorialModal, WinModal} from "./Modal";
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
     const [endTile, setEndTile] = useState({dominoId: "end", x: GRID_WIDTH-1, y: Math.floor(GRID_HEIGHT/2), value: Math.floor(Math.random() * 6) + 1});
-    const [startingDominoCount, setStartingDominoCount] = useState(12);
+    const [startingDominoCount, setStartingDominoCount] = useState(16);
     const [solution, setSolution] = useState([]);
 
     const [grid, setGrid] = useState(Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null)));
@@ -207,15 +207,15 @@ function DominoTrain() {
                 validatedGrid={validatedGrid}
                 clearBoard={clearBoard}
             />
-            <a className="clear-button" onClick={handleClearBoard}>Clear Board</a>
+            <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
             {isStartModalOpen && (
                 <div>
-                    <StartModal CELL_SIZE={CELL_SIZE} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
+                    <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
                 </div>
             )}
             {isTutorialModalOpen && (
                 <div>
-                    <TutorialModal CELL_SIZE={CELL_SIZE} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal}/>
+                    <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal}/>
                 </div>
             )}
             {isWinModalOpen && (

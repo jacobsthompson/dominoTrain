@@ -22,13 +22,11 @@
     z-index: 0;
 }
 
-.modal-button {
-    font-family: 'Karrik', sans-serif;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
 .modal-logo {
     margin: 0 0 20px 0;
     filter: invert(100%);
+}
+
+.modal-icon {
+    margin: 0 0 0.5rem 0;
 }

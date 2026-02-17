@@ -7,53 +7,45 @@
     color: #f8f8ff;
     background-color: #191919;
     margin: 10% auto;
-    padding: 30px;
+    padding: 2rem;
     border: 1px solid #ffffff;
     width: 20rem;
-    height: 30rem;
+    height: 40rem;
     z-index: 100;
 }
 
-.split-container {
-    width: 100%;
-    height: 75%;
-    display: grid;
-    justify-content: space-evenly;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(1, 1fr);
-    /*gap: 2rem;*/
-}
-
-.rules-container {
-    width: auto;
-    display: flex;
-    flex-direction: column;
-    /*justify-content: center;*/
-    align-items: center;
-}
 
 .tutorial-container {
     width: auto;
     display: flex;
     flex-direction: column;
-    /*justify-content: center;*/
+    justify-content: center;
     align-items: center;
 }
 
-.tutorial-text {
-    margin: 0.4rem;
+.tutorial-header {
+    margin: 0.5rem 0 0 0;
     line-height: 1.5rem;
+    font-size: 0.995rem;
+    font-weight: bold;
+}
+
+.tutorial-text {
+    margin: 0.3rem;
+    line-height: 1.5rem;
+    font-size: 0.9rem;
 }
 
 .tutorial-text-container {
     height: 1.5rem;
     line-height: 1.5rem;
     overflow-y: auto;
+    margin: 0.25rem;
 }
 
 .tutorial-domino-holder {
     width: 100%;
-    margin: 50px 0 0 0;
+    margin: 10px 0 0 0;
     border: 0.09rem solid #555555;
     border-radius: 1rem;
     background-color: #333333;
@@ -74,4 +66,12 @@
     width: 100%;
     height: 100%;
     position: relative;
+}
+
+.example-area {
+    width: 11.25rem;
+    height: 1.888rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

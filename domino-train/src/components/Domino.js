@@ -7,7 +7,7 @@ import {soundGenerator} from "./SoundEffects";
 function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid}){
     const [position, setPosition] = useState({x:0,y:0});
     const [gridPosition, setGridPosition] = useState({x: -1, y: -1});
-    const initialRotation = Math.random() > 0.5 ? 90 : 270;
+    const initialRotation = 270;
     const [rotation, setRotation]= useState(initialRotation);
     const [isPlaced, setIsPlaced] = useState(false);
     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
