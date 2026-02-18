@@ -1,7 +1,5 @@
 import './modal.css'
 import './tutorialmodal.css'
-import './startmodal.css'
-import logo from "../assets/DominoTrainLogo.svg";
 import icon from "../assets/DominoTrainIcon.svg";
 import TutorialDomino from "./TutorialDomino";
 import {useEffect, useRef, useState} from "react";
@@ -22,13 +20,13 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
         <div className="modal">
         <div className="modal-background" onClick={updateCallback}/>
             {!isTutorialModalOpen && (
-            <div className="start-content" style={{zIndex: 1000}}>
-                <img src={icon} className="modal-icon" alt="Domino Train" width="75"/>
-                <div className="start-header">Daily Dominos</div>
-                <div className="start-text">Can you connect all the dominos?</div>
-                <div className="start-text">{months[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+            <div className="modal-content">
+                <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
+                <div className="modal-header">Daily Dominos</div>
+                <div className="modal-text">Can you connect all the dominos?</div>
+                <div className="modal-text">{months[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
                 <button className="button" onClick={updateCallback}>Play Puzzle</button>
-                <a className="how-to-play-button" onClick={openTutorialModal}>How To Play?</a>
+                <a className="modal-sub-button" onClick={openTutorialModal}>How To Play?</a>
             </div>
             )}
             {isTutorialModalOpen && (
@@ -41,11 +39,52 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
 }
 
 
-export function winModal({isModalOpen, updateCallback}){
+export function WinModal({finalGrid, stats, isModalOpen, updateCallback}){
+    const createGridText = () => {
+        return finalGrid.map((row, y) => (
+        <div key={y} style={{ display: 'flex' }}>
+            {row.map((cell, x) => (
+                <span
+                    key={x}
+                    style={{ color: cell === null ? 'black' : '#4CAF50' }}
+                >
+                    ■
+                </span>
+            ))}
+        </div>
+        ));
+    };
 
+    return (
+        <div className="modal">
+            <div className="modal-background" onClick={updateCallback}/>
+            <div className="modal-content">
+                <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
+                <div className="modal-header">You Did It!</div>
+                <div className="modal-text">You connected all the dominos!</div>
+                <div className="stats-container">
+                    <div className="stat">
+                        <div className="stat-number">100</div>
+                        <div className="stat-label">Solves</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">1</div>
+                        <div className="stat-label">Day Streak</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">100</div>
+                        <div className="stat-label">Max Streak</div>
+                    </div>
+                </div>
+                {/*<div className="grid">{createGridText()}</div>*/}
+                <button className="button" onClick={updateCallback}>Share Results</button>
+                <a className="modal-sub-button" onClick={updateCallback}>Back To Board</a>
+            </div>
+        </div>
+    );
 }
 
-export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback}){
+export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback}) {
     const cellSize = CELL_SIZE * 4/5;
 
     const [firstMouseDown, setFirstMouseDown] = useState(false);
@@ -226,8 +265,4 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
             </div>
         </div>
     );
-}
-
-export function WinModal({updateCallback}) {
-
 }

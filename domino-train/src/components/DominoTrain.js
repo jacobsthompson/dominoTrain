@@ -6,7 +6,7 @@ import validateDominoPath from "./ValidateBoard";
 import DominoPips from "./DominoPips";
 import './style.css';
 import logo from '../assets/DominoTrainLogo.svg'
-import Scoreboard from "./Scoreboard";
+import {Scoreboard, ScoreUI} from "./Scoreboard";
 import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
 import {StartModal, TutorialModal, WinModal} from "./Modal";
@@ -14,7 +14,7 @@ import {StartModal, TutorialModal, WinModal} from "./Modal";
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
     const [endTile, setEndTile] = useState({dominoId: "end", x: GRID_WIDTH-1, y: Math.floor(GRID_HEIGHT/2), value: Math.floor(Math.random() * 6) + 1});
-    const [startingDominoCount, setStartingDominoCount] = useState(16);
+    const [startingDominoCount, setStartingDominoCount] = useState(12   );
     const [solution, setSolution] = useState([]);
 
     const [grid, setGrid] = useState(Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null)));
@@ -34,10 +34,13 @@ function DominoTrain() {
     const [solutionFound, setSolutionFound] = useState(false);
     const solutionFoundRef = useRef(false);
 
+    const [gameWon, setGameWon] = useState(false);
+    const [animatedWon, setAnimatedWon] = useState(false);
+
     useEffect(() => {
         const generateSolution = () => {
             const { solution, start, end } = generateDominoValues(startingDominoCount);
-            console.log(start, end);
+            // console.log(start, end);
             setStartingTile(start);
             setEndTile(end);
             setSolution(solution);
@@ -53,6 +56,16 @@ function DominoTrain() {
     }, [grid]);
 
     useEffect(() => {
+        if(score === startingDominoCount && solutionFound && animatedWon){
+            if(!gameWon){
+                setGameWon(true);
+                //update stat cache
+            }
+            openWinModal();
+        }
+    }, [score, solutionFound, animatedWon]);
+
+    useEffect(() => {
         const initAudio = () => {
             soundGenerator.init();
             document.removeEventListener('click', initAudio);
@@ -64,6 +77,7 @@ function DominoTrain() {
     useEffect(() => {
         solutionFoundRef.current = solutionFound;
     }, [solutionFound]);
+
 
     const printGrid = () => {
         console.log('=== Current Grid State ===');
@@ -123,6 +137,8 @@ function DominoTrain() {
         setValidatedGrid(verifiedGrid);
         setScore(score);
         setSolutionFound(foundGoal);
+        setAnimatedWon(false);
+        // checkForWin();
     }
 
     const handleClearBoard = () => {
@@ -153,6 +169,9 @@ function DominoTrain() {
         setIsWinModalOpen(!isWinModalOpen);
     }
 
+    const handleWon = () => {
+        setAnimatedWon(true);
+    }
 
     useEffect(() => {
         window.addEventListener("resize", handleResize);
@@ -169,9 +188,10 @@ function DominoTrain() {
 
     return (
         <div className="domino-train">
-            <img src={logo} className="logo" alt="Domino Train" width="250"/>
-            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"}/>
-            <div className="grid">
+            {/*<img src={logo} className="logo" alt="Domino Train" width="250"/>*/}
+            <ScoreUI boardWidth={CELL_SIZE*GRID_WIDTH} score={score} topScore={startingDominoCount} solutionFound={solutionFound}/>
+            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"} solutionFound={solutionFound} handleWon={handleWon}/>
+            <div className="grid" style={{boxShadow: (score === startingDominoCount && solutionFound) ? '0 0 2rem #4CAF50' : 'none'}}>
                 <Board CELL_SIZE={CELL_SIZE} grid={grid} solutionFound={solutionFound} score={score} topScore={startingDominoCount} validatedGrid={validatedGrid}/>
                 <div className="starting-tile" id="start-tile"
                      style={{
@@ -196,7 +216,7 @@ function DominoTrain() {
                     </div>
                 </div>
             </div>
-            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"}/>
+            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"} solutionFound={solutionFound} handleWon={handleWon}/>
             <DominoHolder
                 CELL_SIZE={CELL_SIZE}
                 count={startingDominoCount}
@@ -220,7 +240,7 @@ function DominoTrain() {
             )}
             {isWinModalOpen && (
                 <div>
-                    <WinModal isModalOpen={isWinModalOpen} updateCallback={openWinModal}/>
+                    <WinModal finalGrid={validatedGrid} isModalOpen={isWinModalOpen} updateCallback={openWinModal}/>
                 </div>
             )}
         </div>

@@ -14,7 +14,6 @@ function checkFullCell(grid, x, y){
     return grid[y][x] !== null
 }
 
-// style={{boxShadow: (solutionFound && score === topScore) ? '0 0 0.5rem #4CAF50' : 'none'}}
 
 function Board({grid, validatedGrid, solutionFound, score, topScore, CELL_SIZE}){
     return(

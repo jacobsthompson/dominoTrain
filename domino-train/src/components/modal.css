@@ -22,6 +22,32 @@
     z-index: 0;
 }
 
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #f8f8ff;
+    background-color: #191919;
+    margin: 10% auto;
+    padding: 2rem;
+    border: 1px solid #f8f8ff;
+    width: 15rem;
+    height: 20rem;
+    z-index: 100;
+}
+
+.modal-text {
+    font-size: 1rem;
+    font-weight: normal;
+    margin: 0.4rem;
+}
+
+.modal-header {
+    font-size: 1.7rem;
+    font-weight: bold;
+    margin: 0.4rem;
+}
+
 .modal-logo {
     margin: 0 0 20px 0;
     filter: invert(100%);
@@ -29,4 +55,47 @@
 
 .modal-icon {
     margin: 0 0 0.5rem 0;
+}
+
+.modal-sub-button {
+    font-family: 'Karrik', sans-serif;
+    font-size: 0.8rem;
+    color: #aaa;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+a:hover {
+    color: #f8f8ff;
+    text-decoration: underline;
+}
+
+.stats-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0.5rem 0 0 0;
+    justify-content: space-evenly;
+}
+
+.stat-number {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    font-weight: normal;
+    margin: 0.4rem;
+}
+
+.grid {
+    margin: 0;
+    color: #4CAF50;
+    line-height: 59%;
+    font-size: 1.5rem;
+    font-family: monospace;
 }

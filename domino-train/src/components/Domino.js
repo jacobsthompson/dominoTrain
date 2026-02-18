@@ -146,8 +146,8 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
                     //TOUCH DRAGGING
 
                     if(e.touches.length === 1) {
-                        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-                        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+                        const clientX = e.touches[0].clientX;
+                        const clientY = e.touches[0].clientY;
 
                         currentMousePos.current = {x: clientX, y: clientY}
                         const dragOffset = dragOffsetRef.current;
@@ -304,8 +304,6 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
             return;
         }
 
-        console.log("down");
-
         if (isPlaced && onPickup) {
             onPickup(id);
             setIsPlaced(false);
@@ -316,10 +314,10 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
 
         let { shiftX, shiftY} = recenterPointer(e);
 
-        if(e.type === 'touchstart'){
-            shiftX = 0;
-            shiftY = 0;
-        }
+        // if(e.type === 'touchstart'){
+        //     shiftX = 0;
+        //     shiftY = 0;
+        // }
 
         const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
         const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;

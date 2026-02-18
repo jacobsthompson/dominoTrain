@@ -90,10 +90,11 @@ class SoundGenerator {
     }
 
     // 5. Scoreboard Sound - Pleasant "ding"
-    playScore(score) {
-        const frequencies = [523.25, 554.36, 587.33, 622.25, 659.25, 698.456, 739.99, 783.99, 830.61, 880, 932.33, 1046.502];
+    playScore(score, topScore) {
+        // const frequencies = [523.25, 554.36, 587.33, 622.25, 659.25, 698.456, 739.99, 783.99, 830.61, 880, 932.33, 1046.502];
         if(score >= 0){
-            this.playDomino(frequencies[score], frequencies[score]);
+            let freq = 523.25 + (525.25 * score/topScore);
+            this.playDomino(freq, freq);
         }
     }
 
