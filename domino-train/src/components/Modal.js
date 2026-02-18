@@ -20,14 +20,16 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
         <div className="modal">
         <div className="modal-background" onClick={updateCallback}/>
             {!isTutorialModalOpen && (
-            <div className="modal-content">
-                <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
-                <div className="modal-header">Daily Dominos</div>
-                <div className="modal-text">Can you connect all the dominos?</div>
-                <div className="modal-text">{months[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
-                <button className="button" onClick={updateCallback}>Play Puzzle</button>
-                <a className="modal-sub-button" onClick={openTutorialModal}>How To Play?</a>
-            </div>
+                <div className="modal-content">
+                    <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
+                    <div className="modal-header">Daily Dominos</div>
+                    <div className="modal-text">Can you connect all the dominos?</div>
+                    <div className="modal-text">{months[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+                    <div className="button-container">
+                        <button className="button" onClick={updateCallback}>Play Puzzle</button>
+                        <a className="modal-sub-button" onClick={openTutorialModal}>How To Play?</a>
+                    </div>
+                </div>
             )}
             {isTutorialModalOpen && (
                 <div>
@@ -39,7 +41,9 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
 }
 
 
-export function WinModal({finalGrid, stats, isModalOpen, updateCallback}){
+export function WinModal({finalGrid, isModalOpen, updateCallback}){
+    const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+
     const createGridText = () => {
         return finalGrid.map((row, y) => (
         <div key={y} style={{ display: 'flex' }}>
@@ -64,21 +68,23 @@ export function WinModal({finalGrid, stats, isModalOpen, updateCallback}){
                 <div className="modal-text">You connected all the dominos!</div>
                 <div className="stats-container">
                     <div className="stat">
-                        <div className="stat-number">100</div>
+                        <div className="stat-number">{stats.wins ? stats.wins : 0}</div>
                         <div className="stat-label">Solves</div>
                     </div>
                     <div className="stat">
-                        <div className="stat-number">1</div>
+                        <div className="stat-number">{stats.streak ? stats.streak : 0}</div>
                         <div className="stat-label">Day Streak</div>
                     </div>
                     <div className="stat">
-                        <div className="stat-number">100</div>
+                        <div className="stat-number">{stats.maxStreak ? stats.maxStreak : 0}</div>
                         <div className="stat-label">Max Streak</div>
                     </div>
                 </div>
                 {/*<div className="grid">{createGridText()}</div>*/}
-                <button className="button" onClick={updateCallback}>Share Results</button>
-                <a className="modal-sub-button" onClick={updateCallback}>Back To Board</a>
+                <div className="button-container">
+                    <button className="button" onClick={updateCallback}>Share Results</button>
+                    <a className="modal-sub-button" onClick={updateCallback}>Back To Board</a>
+                </div>
             </div>
         </div>
     );
@@ -261,7 +267,41 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                         </div>
                     </div>
                 </div>
-                <button className="button" onClick={updateCallback}>Play Puzzle</button>
+                <div className="button-container">
+                    <button className="button" onClick={updateCallback}>Play Puzzle</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function StatsModal({isModalOpen, updateCallback}){
+    const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+
+    return (
+        <div className="modal">
+            <div className="modal-background" onClick={updateCallback}/>
+            <div className="modal-content">
+                <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
+                <div className="modal-header">Game Statistics</div>
+                <div className="modal-text">See how well you're doing!</div>
+                <div className="stats-container">
+                    <div className="stat">
+                        <div className="stat-number">{(stats && stats.wins) ? stats.wins : 0}</div>
+                        <div className="stat-label">Solves</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">{(stats && stats.streak) ? stats.streak : 0}</div>
+                        <div className="stat-label">Day Streak</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">{(stats && stats.maxStreak) ? stats.maxStreak : 0}</div>
+                        <div className="stat-label">Max Streak</div>
+                    </div>
+                </div>
+                <div className="button-container">
+                    <button className="button" onClick={updateCallback}>Back To Game</button>
+                </div>
             </div>
         </div>
     );

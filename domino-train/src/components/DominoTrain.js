@@ -9,7 +9,7 @@ import logo from '../assets/DominoTrainLogo.svg'
 import {Scoreboard, ScoreUI} from "./Scoreboard";
 import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
-import {StartModal, TutorialModal, WinModal} from "./Modal";
+import {StartModal, StatsModal, TutorialModal, WinModal} from "./Modal";
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -30,6 +30,7 @@ function DominoTrain() {
     const [isStartModalOpen, setIsStartModalOpen] = useState(false);
     const [isTutorialModalOpen, setIsTutorialModalOpen] = useState(false);
     const [isWinModalOpen, setIsWinModalOpen] = useState(false);
+    const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
     const [solutionFound, setSolutionFound] = useState(false);
     const solutionFoundRef = useRef(false);
@@ -59,7 +60,7 @@ function DominoTrain() {
         if(score === startingDominoCount && solutionFound && animatedWon){
             if(!gameWon){
                 setGameWon(true);
-                //update stat cache
+                saveStats();
             }
             openWinModal();
         }
@@ -78,6 +79,36 @@ function DominoTrain() {
         solutionFoundRef.current = solutionFound;
     }, [solutionFound]);
 
+
+    const saveStats = () => {
+        const today = new Date().toDateString();
+
+        const stats = JSON.parse(localStorage.getItem('DailyDominoStats')) || {
+            wins: 0,
+            winDates: [],
+            streak: 0,
+            maxStreak: 0,
+            lastWinDate: null
+        };
+
+        if(stats.lastWinDate === today) return;
+
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const wasYesterday = stats.lastWinDate === yesterday.toDateString();
+
+        const newStreak = wasYesterday ? stats.streak + 1 : 1;
+
+        const updatedStats = {
+            wins: stats.wins + 1,
+            winDates: [...stats.winDates, today],
+            streak: newStreak,
+            maxStreak: Math.max(newStreak, stats.maxStreak),
+            lastWinDate: today
+        };
+
+        localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
+    }
 
     const printGrid = () => {
         console.log('=== Current Grid State ===');
@@ -169,6 +200,10 @@ function DominoTrain() {
         setIsWinModalOpen(!isWinModalOpen);
     }
 
+    const openStatsModal = () => {
+        setIsStatsModalOpen(!isStatsModalOpen);
+    }
+
     const handleWon = () => {
         setAnimatedWon(true);
     }
@@ -236,6 +271,11 @@ function DominoTrain() {
             {isTutorialModalOpen && (
                 <div>
                     <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal}/>
+                </div>
+            )}
+            {isStatsModalOpen && (
+                <div>
+                    <StatsModal isModalOpen={isStatsModalOpen} updateCallback={openStatsModal}/>
                 </div>
             )}
             {isWinModalOpen && (
