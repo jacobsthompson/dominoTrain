@@ -6,10 +6,10 @@ import {useEffect, useRef, useState} from "react";
 import {soundGenerator} from "./SoundEffects";
 import FakeDomino from "./FakeDomino";
 
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const date = new Date();
 
 export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback}){
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const date = new Date();
     const [isTutorialModalOpen, setIsTutorialModalOpen] = useState(false);
 
     const openTutorialModal = () => {
@@ -43,21 +43,20 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
 
 export function WinModal({finalGrid, isModalOpen, updateCallback}){
     const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
-
-    const createGridText = () => {
-        return finalGrid.map((row, y) => (
-        <div key={y} style={{ display: 'flex' }}>
-            {row.map((cell, x) => (
-                <span
-                    key={x}
-                    style={{ color: cell === null ? 'black' : '#4CAF50' }}
-                >
-                    ■
-                </span>
-            ))}
-        </div>
-        ));
-    };
+    // const createGridText = () => {
+    //     return finalGrid.map((row, y) => (
+    //     <div key={y} style={{ display: 'flex' }}>
+    //         {row.map((cell, x) => (
+    //             <span
+    //                 key={x}
+    //                 style={{ color: cell === null ? 'black' : '#4CAF50' }}
+    //             >
+    //                 ■
+    //             </span>
+    //         ))}
+    //     </div>
+    //     ));
+    // };
 
     return (
         <div className="modal">
@@ -65,6 +64,7 @@ export function WinModal({finalGrid, isModalOpen, updateCallback}){
             <div className="modal-content">
                 <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
                 <div className="modal-header">You Did It!</div>
+                <div className="modal-subtext">{months[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
                 <div className="modal-text">You connected all the dominos!</div>
                 <div className="stats-container">
                     <div className="stat">

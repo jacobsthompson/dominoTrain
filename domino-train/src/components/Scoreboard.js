@@ -2,9 +2,8 @@ import {useEffect, useRef, useState} from "react";
 import "./scoreboard.css"
 import {soundGenerator} from "./SoundEffects";
 import {GRID_WIDTH} from "./Constants";
-import icon from "../assets/DominoTrainIcon.svg";
 
-export function Scoreboard({CELL_SIZE, side, score, topScore, solutionFound, handleWon}){
+export default function Scoreboard({CELL_SIZE, side, score, topScore, solutionFound, handleWon}){
     const [displayScore, setDisplayScore] = useState(0);
     const [animating, setAnimating] = useState(false);
     const previousScore = useRef(0);

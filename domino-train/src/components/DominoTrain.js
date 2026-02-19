@@ -1,16 +1,20 @@
 import {useEffect, useRef, useState} from "react";
 import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./Constants";
+import Header from "./Header";
 import Board from "./Board"
+import Scoreboard from "./Scoreboard";
+import DominoPips from "./DominoPips";
 import DominoHolder from "./DominoHolder";
 import validateDominoPath from "./ValidateBoard";
-import DominoPips from "./DominoPips";
-import './style.css';
-import logo from '../assets/DominoTrainLogo.svg'
-import {Scoreboard, ScoreUI} from "./Scoreboard";
-import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
 import {StartModal, StatsModal, TutorialModal, WinModal} from "./Modal";
-import Header from "./Header";
+import {soundGenerator} from "./SoundEffects";
+import statsIcon from '../assets/StatsIcon.svg';
+import howToIcon from '../assets/HowToIcon.svg';
+import moreIcon from '../assets/MoreIcon.svg'
+import icon from '../assets/DominoTrainIcon.svg';
+import './style.css';
+
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -39,18 +43,29 @@ function DominoTrain() {
     const [gameWon, setGameWon] = useState(false);
     const [animatedWon, setAnimatedWon] = useState(false);
 
+    const svgs = [statsIcon, howToIcon, moreIcon, icon];
+
+    function preloadImages(srcs) {
+      return Promise.all(srcs.map(src => new Promise((resolve) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = resolve;
+        img.onerror = resolve;
+      })));
+    }
+
     useEffect(() => {
-        const generateSolution = () => {
+        const init = async ()  => {
             const { solution, start, end } = generateDominoValues(startingDominoCount);
-            // console.log(start, end);
             setStartingTile(start);
             setEndTile(end);
             setSolution(solution);
+            await preloadImages(svgs);
+            handleResize();
+            openStartModal();
             setIsInitialized(true);
-        }
-        generateSolution();
-        handleResize();
-        openStartModal();
+        };
+        init();
     }, []);
 
     useEffect(() => {
@@ -217,7 +232,6 @@ function DominoTrain() {
     if(!isInitialized){
         return(
             <div className="loading">
-                <img src={logo} className="logo" alt="Domino Train" width="300"/>
             </div>
         )
     }
@@ -226,7 +240,6 @@ function DominoTrain() {
         <div className="window">
             <Header howToPlayModal={openTutorialModal} statsModal={openStatsModal}/>
             <div className="domino-train">
-                {/*<img src={logo} className="logo" alt="Domino Train" width="250"/>*/}
                 <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"} solutionFound={solutionFound} handleWon={handleWon}/>
                 <div className="grid" style={{boxShadow: (score === startingDominoCount && solutionFound) ? '0 0 2rem #4CAF50' : 'none'}}>
                     <Board CELL_SIZE={CELL_SIZE} grid={grid} solutionFound={solutionFound} score={score} topScore={startingDominoCount} validatedGrid={validatedGrid}/>
