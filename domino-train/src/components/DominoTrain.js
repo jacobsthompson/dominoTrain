@@ -10,6 +10,7 @@ import {Scoreboard, ScoreUI} from "./Scoreboard";
 import {soundGenerator} from "./SoundEffects";
 import generateDominoValues from "./GenerateSolution";
 import {StartModal, StatsModal, TutorialModal, WinModal} from "./Modal";
+import Header from "./Header";
 
 function DominoTrain() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -222,67 +223,69 @@ function DominoTrain() {
     }
 
     return (
-        <div className="domino-train">
-            {/*<img src={logo} className="logo" alt="Domino Train" width="250"/>*/}
-            <ScoreUI boardWidth={CELL_SIZE*GRID_WIDTH} score={score} topScore={startingDominoCount} solutionFound={solutionFound}/>
-            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"} solutionFound={solutionFound} handleWon={handleWon}/>
-            <div className="grid" style={{boxShadow: (score === startingDominoCount && solutionFound) ? '0 0 2rem #4CAF50' : 'none'}}>
-                <Board CELL_SIZE={CELL_SIZE} grid={grid} solutionFound={solutionFound} score={score} topScore={startingDominoCount} validatedGrid={validatedGrid}/>
-                <div className="starting-tile" id="start-tile"
-                     style={{
-                         left: startingTile.x * GRID_WIDTH - CELL_SIZE,
-                         top: startingTile.y * CELL_SIZE,
-                         width: CELL_SIZE,
-                         height: CELL_SIZE
-                     }}>
-                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE, boxShadow: '0 0 0.5rem #4CAF50'}}>
-                        <DominoPips CELL_SIZE={CELL_SIZE} value={startingTile.value} color={'#4CAF50'} inHolder={false}/>
+        <div className="window">
+            <Header howToPlayModal={openTutorialModal} statsModal={openStatsModal}/>
+            <div className="domino-train">
+                {/*<img src={logo} className="logo" alt="Domino Train" width="250"/>*/}
+                <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"} solutionFound={solutionFound} handleWon={handleWon}/>
+                <div className="grid" style={{boxShadow: (score === startingDominoCount && solutionFound) ? '0 0 2rem #4CAF50' : 'none'}}>
+                    <Board CELL_SIZE={CELL_SIZE} grid={grid} solutionFound={solutionFound} score={score} topScore={startingDominoCount} validatedGrid={validatedGrid}/>
+                    <div className="starting-tile" id="start-tile"
+                         style={{
+                             left: startingTile.x * GRID_WIDTH - CELL_SIZE,
+                             top: startingTile.y * CELL_SIZE,
+                             width: CELL_SIZE,
+                             height: CELL_SIZE
+                         }}>
+                        <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE, boxShadow: '0 0 0.5rem #4CAF50'}}>
+                            <DominoPips CELL_SIZE={CELL_SIZE} value={startingTile.value} color={'#4CAF50'} inHolder={false}/>
+                        </div>
+                    </div>
+                    <div className="starting-tile" id="end-tile"
+                         style={{
+                             left: endTile.x * CELL_SIZE + 2 + CELL_SIZE,
+                             top: endTile.y * CELL_SIZE,
+                             width: CELL_SIZE,
+                             height: CELL_SIZE
+                         }}>
+                        <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE, boxShadow: solutionFound ? '0 0 0.5rem #4CAF50' : '0 0 0.5rem #D44444'}}>
+                            <DominoPips CELL_SIZE={CELL_SIZE} value={endTile.value} color={(solutionFound ? '#4CAF50' : '#D44444')} inHolder={false}/>
+                        </div>
                     </div>
                 </div>
-                <div className="starting-tile" id="end-tile"
-                     style={{
-                         left: endTile.x * CELL_SIZE + 2 + CELL_SIZE,
-                         top: endTile.y * CELL_SIZE,
-                         width: CELL_SIZE,
-                         height: CELL_SIZE
-                     }}>
-                    <div className="domino-half starting-tile-domino" style={{width: CELL_SIZE, height: CELL_SIZE, boxShadow: solutionFound ? '0 0 0.5rem #4CAF50' : '0 0 0.5rem #D44444'}}>
-                        <DominoPips CELL_SIZE={CELL_SIZE} value={endTile.value} color={(solutionFound ? '#4CAF50' : '#D44444')} inHolder={false}/>
+                <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"} solutionFound={solutionFound} handleWon={handleWon}/>
+                <DominoHolder
+                    CELL_SIZE={CELL_SIZE}
+                    count={startingDominoCount}
+                    solution={solution}
+                    onPlacement={handlePlacement}
+                    onRemoval={handleRemoval}
+                    grid={grid}
+                    validatedGrid={validatedGrid}
+                    clearBoard={clearBoard}
+                />
+                <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
+                {isStartModalOpen && (
+                    <div>
+                        <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
                     </div>
-                </div>
+                )}
+                {isTutorialModalOpen && (
+                    <div>
+                        <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal} buttonText={"Back To Game"}/>
+                    </div>
+                )}
+                {isStatsModalOpen && (
+                    <div>
+                        <StatsModal isModalOpen={isStatsModalOpen} updateCallback={openStatsModal}/>
+                    </div>
+                )}
+                {isWinModalOpen && (
+                    <div>
+                        <WinModal finalGrid={validatedGrid} isModalOpen={isWinModalOpen} updateCallback={openWinModal}/>
+                    </div>
+                )}
             </div>
-            <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"} solutionFound={solutionFound} handleWon={handleWon}/>
-            <DominoHolder
-                CELL_SIZE={CELL_SIZE}
-                count={startingDominoCount}
-                solution={solution}
-                onPlacement={handlePlacement}
-                onRemoval={handleRemoval}
-                grid={grid}
-                validatedGrid={validatedGrid}
-                clearBoard={clearBoard}
-            />
-            <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
-            {isStartModalOpen && (
-                <div>
-                    <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
-                </div>
-            )}
-            {isTutorialModalOpen && (
-                <div>
-                    <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal}/>
-                </div>
-            )}
-            {isStatsModalOpen && (
-                <div>
-                    <StatsModal isModalOpen={isStatsModalOpen} updateCallback={openStatsModal}/>
-                </div>
-            )}
-            {isWinModalOpen && (
-                <div>
-                    <WinModal finalGrid={validatedGrid} isModalOpen={isWinModalOpen} updateCallback={openWinModal}/>
-                </div>
-            )}
         </div>
     );
 }

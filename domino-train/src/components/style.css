@@ -14,10 +14,11 @@ html, body {
 }
 
 #root {
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
+    /*align-items: center;*/
     overflow: hidden;
 }
 
@@ -27,6 +28,11 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.window {
+    width: 100vw;
+    height: 100vh;
 }
 
 .domino-train {
@@ -39,7 +45,7 @@ html, body {
     align-items: center;
     box-sizing: border-box;
 
-    /*padding: 20px;*/
+    padding: 20px;
     margin: auto;
 
     text-align: center;

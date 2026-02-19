@@ -29,7 +29,7 @@ export function Scoreboard({CELL_SIZE, side, score, topScore, solutionFound, han
                     clearInterval(interval);
 
                     if(newScore === topScore && handleWon) {
-                        setTimeout(() => handleWon(), 250);
+                        setTimeout(() => handleWon(), 300);
                     }
 
                     return score;
@@ -70,16 +70,4 @@ export function Scoreboard({CELL_SIZE, side, score, topScore, solutionFound, han
             </div>
         </div>
     );
-}
-
-export function ScoreUI({boardWidth, score, topScore, solutionFound}){
-        return(
-            <div className="score-ui">
-                <div className="score-ui-container" style={{width: boardWidth}}>
-                    <div className="score">{score}/{topScore}</div>
-                    <img src={icon} className="score-icon" alt="[0/0]" width="50"/>
-                    <div className="score-text right">Daily Dominos</div>
-                </div>
-            </div>
-        );
 }

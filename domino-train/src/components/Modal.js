@@ -90,7 +90,7 @@ export function WinModal({finalGrid, isModalOpen, updateCallback}){
     );
 }
 
-export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback}) {
+export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback, buttonText = "Play Puzzle"}) {
     const cellSize = CELL_SIZE * 4/5;
 
     const [firstMouseDown, setFirstMouseDown] = useState(false);
@@ -268,7 +268,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                     </div>
                 </div>
                 <div className="button-container">
-                    <button className="button" onClick={updateCallback}>Play Puzzle</button>
+                    <button className="button" onClick={updateCallback}>{buttonText}</button>
                 </div>
             </div>
         </div>
