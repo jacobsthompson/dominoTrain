@@ -88,6 +88,15 @@ button:hover {
     box-shadow: 0 0 0.5rem rgba(248,248,255,1);
 }
 
+.sub-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: #ccc;
+    gap: 20px;
+}
+
 .sub-button {
     font-family: 'Karrik', sans-serif;
     font-size: 0.8rem;
@@ -95,7 +104,7 @@ button:hover {
     color: #ccc;
     background: none;
     border: none;
-    margin: 10px 0 0 0;
+    /*margin: 10px 0 0 0;*/
     padding: 0;
     cursor: pointer;
 }

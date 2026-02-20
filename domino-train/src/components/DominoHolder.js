@@ -3,25 +3,14 @@ import Domino from "./Domino";
 import './style.css'
 import {GRID_WIDTH, HOLDER_SCALING} from "./Constants";
 
-function shuffle(arr) {
-  	for (let i = arr.length - 1; i > 0; i--) {
-    	const j = Math.floor(Math.random() * (i + 1));
-    	[arr[i], arr[j]] = [arr[j], arr[i]];
-  	}
-  	return arr;
-}
-
-function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedGrid, clearBoard, CELL_SIZE, returnStates, initialStates}){
+export default function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedGrid, clearBoard, CELL_SIZE, returnStates, initialStates}){
     const [dominos] = useState(() => {
-        console.log("Generating")
         return Array.from({length: count}, (_, i) => ({
             id: i + 1,
             value1: solution[i*2],
             value2: solution[i*2+1]
         }));
     });
-
-    const dominoStates = useRef({});
 
     const currentlyDraggingId = useRef(null);
 
@@ -47,6 +36,7 @@ function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedG
         }
     };
 
+    const dominoStates = useRef({});
 
     const getDominoState = (dominoId, x, y, gridx, gridy, rotation) => {
         dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation};
@@ -79,5 +69,3 @@ function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedG
        </div>
    );
 }
-
-export default DominoHolder;

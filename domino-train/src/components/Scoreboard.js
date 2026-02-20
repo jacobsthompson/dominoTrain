@@ -10,7 +10,6 @@ export default function Scoreboard({CELL_SIZE, side, score, topScore, solutionFo
 
     useEffect(() => {
         if(skipAnimation){
-            console.log("Skipping")
             setDisplayScore(score);
             return;
         }
@@ -47,10 +46,11 @@ export default function Scoreboard({CELL_SIZE, side, score, topScore, solutionFo
     }, [score, displayScore]);
 
     const playSound = (score) => {
-        soundGenerator.playScore(score-1, topScore-1);
+        soundGenerator.playScore(score - 1, topScore - 1);
+        if(score === topScore) {
+            soundGenerator.playVictory();
+        }
     }
-
-    console.log("Returning");
 
     return (
         <div className="scoreboard-container" style={{width: CELL_SIZE * GRID_WIDTH + 2}}>

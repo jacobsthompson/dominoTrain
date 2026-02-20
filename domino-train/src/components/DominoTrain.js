@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {CELL_SIZE, GRID_HEIGHT, GRID_WIDTH} from "./Constants";
+import {GRID_HEIGHT, GRID_WIDTH} from "./Constants";
 import Header from "./Header";
 import Board from "./Board"
 import Scoreboard from "./Scoreboard";
@@ -82,8 +82,8 @@ function DominoTrain() {
                 setGrid(stats.currWinBoard);
                 setValidatedGrid(stats.currWinBoard);
                 setWinStates(stats.currWinStates);
-                setSolutionFound(true);
                 setScore(startingDominoCount);
+                setSolutionFound(true);
                 setAnimatedWon(true);
                 setGameWon(true);
                 openWinModal();
@@ -102,13 +102,13 @@ function DominoTrain() {
             setStartingTile(start);
             setEndTile(end);
             setSolution(solution);
+            setScore(0);
+            setSolutionFound(false);
+            setAnimatedWon(false);
             setWinStates(null);
             handleClearBoard();
             setEndlessKey(prev => prev + 1);
-            setSolutionFound(false);
-            setAnimatedWon(false);
-            setScore(0);
-            openWinModal();
+            if(isWinModalOpen) openWinModal();
             soundGenerator.playClear();
         }
     }, [endlessMode]);
@@ -342,10 +342,18 @@ function DominoTrain() {
                     returnStates={getDominoStates}
                     initialStates={winStates}
                 />
-                <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
+                <div className="sub-button-container">
+                    {endlessMode > 0 && (
+                        <a className="sub-button" onClick={handleEndless}>New Game</a>
+                    )}
+                    {endlessMode > 0 && (
+                        <div>|</div>
+                    )}
+                    <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
+                </div>
                 {isStartModalOpen && (
                     <div>
-                        <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
+                    <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
                     </div>
                 )}
                 {isTutorialModalOpen && (

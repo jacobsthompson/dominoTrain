@@ -11,7 +11,6 @@ class SoundGenerator {
         return this.audioContext;
     }
 
-
     playDomino(startFreq, endFreq){
         const ctx = this.init();
         const now = ctx.currentTime;
@@ -100,6 +99,42 @@ class SoundGenerator {
 
     playTutorial(){
         this.playDomino(1046.502,1046.502);
+    }
+
+    playVictory() {
+        const ctx = this.init();
+        const now = ctx.currentTime;
+        const beat = 60 / 240;
+
+        const playNote = (freq, startTime, duration, volume = 0.1) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+            gain.gain.setValueAtTime(volume, startTime + duration * 0.4);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+            osc.start(startTime);
+            osc.stop(startTime + duration + 0.05);
+        };
+
+        playNote(587.33, now, beat * 1.5, 0.1);  // D5
+        playNote(739.99, now, beat * 1.5, 0.1);  // F#5
+        playNote(880.00, now, beat * 1.5, 0.05); // A5
+        playNote(1174.66, now, beat * 1.5, 0.05); // D6
+
+        const chordStart = now + beat;
+        playNote(587.33, chordStart, beat * 4, 0.1);
+        playNote(739.99, chordStart, beat * 4, 0.1);
+        playNote(880.00, chordStart, beat * 4, 0.05);
+        playNote(1174.66, chordStart, beat * 4, 0.05);
     }
 }
 

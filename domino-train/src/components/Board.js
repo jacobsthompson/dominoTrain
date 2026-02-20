@@ -14,7 +14,7 @@ function checkFullCell(grid, x, y){
     return grid[y][x] !== null
 }
 
-function Board({grid, validatedGrid, solutionFound, score, topScore, CELL_SIZE}){
+function Board({grid, validatedGrid, solutionFound, CELL_SIZE}){
     return(
         <div className="board" id={"board"}>
             {grid.map((row,y) =>(
