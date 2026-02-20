@@ -41,7 +41,7 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
 }
 
 
-export function WinModal({finalGrid, isModalOpen, updateCallback}){
+export function WinModal({endlessMode, isModalOpen, handleEndlessMode, updateCallback}){
     const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
     // const createGridText = () => {
     //     return finalGrid.map((row, y) => (
@@ -58,13 +58,15 @@ export function WinModal({finalGrid, isModalOpen, updateCallback}){
     //     ));
     // };
 
+    const subtitle = endlessMode > 0 ? "Endless Mode" : months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+
     return (
         <div className="modal">
             <div className="modal-background" onClick={updateCallback}/>
             <div className="modal-content">
                 <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
                 <div className="modal-header">You Did It!</div>
-                <div className="modal-subtext">{months[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+                <div className="modal-subtext">{subtitle}</div>
                 <div className="modal-text">You connected all the dominos!</div>
                 <div className="stats-container">
                     <div className="stat">
@@ -82,7 +84,7 @@ export function WinModal({finalGrid, isModalOpen, updateCallback}){
                 </div>
                 {/*<div className="grid">{createGridText()}</div>*/}
                 <div className="button-container">
-                    <button className="button" onClick={updateCallback}>Share Results</button>
+                    <button className="button" onClick={handleEndlessMode}>Play Endless</button>
                     <a className="modal-sub-button" onClick={updateCallback}>Back To Board</a>
                 </div>
             </div>
@@ -91,7 +93,7 @@ export function WinModal({finalGrid, isModalOpen, updateCallback}){
 }
 
 export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback, buttonText = "Play Puzzle"}) {
-    const cellSize = CELL_SIZE * 4/5;
+    const cellSize = CELL_SIZE * 4 / 5;
 
     const [firstMouseDown, setFirstMouseDown] = useState(false);
     const [firstMouseMove, setFirstMouseMove] = useState(false);
@@ -119,6 +121,9 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
 
     const currentRotationRef = useRef('h');
     const isVerticalRef = useRef(false);
+
+    const [isMobile, setIsMobile] = useState(0);
+    const mobileRotationText = ["While Dragging, Press R or Right Click to Rotate.", "While Dragging, Pinch and Twist to Rotate."];
 
     useEffect(() => {
         firstMouseDownRef.current = firstMouseDown;
@@ -177,6 +182,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
             if(!firstMouseDownRef.current){
                 setFirstMouseDown(true);
                 soundGenerator.playTutorial();
+                if(e.type === 'touchstart') setIsMobile(1);
                 const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
                 const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
                 setInitialMouseX(clientX);
@@ -235,7 +241,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                         </div>
                         <div ref={rotateText} className="tutorial-text"
                              style={{color: firstRotate ? "#4CAF50" : "#f8f8ff"}}>
-                            While Dragging, Press R to Rotate.
+                            {mobileRotationText[isMobile]}
                         </div>
                         <div ref={upText} className="tutorial-text"
                              style={{color: firstMouseUp ? "#4CAF50" : "#f8f8ff"}}>

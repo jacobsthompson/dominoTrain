@@ -43,6 +43,14 @@ function DominoTrain() {
     const [gameWon, setGameWon] = useState(false);
     const [animatedWon, setAnimatedWon] = useState(false);
 
+    const [endlessMode, setEndlessMode] = useState(0);
+    const [endlessKey, setEndlessKey] = useState(0);
+
+    const [winStates, setWinStates] = useState(null);
+    const [dominoStates, setDominoStates] = useState(null);
+
+    const [skipAnimation, setSkipAnimation] = useState(false);
+
     const svgs = [statsIcon, howToIcon, moreIcon, icon];
 
     function preloadImages(srcs) {
@@ -54,34 +62,74 @@ function DominoTrain() {
       })));
     }
 
+    //Daily Board Setup
     useEffect(() => {
+        const today = new Date().toDateString();
+        const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+        const beatenToday = stats?.lastWinDate === today;
+
         const init = async ()  => {
-            const { solution, start, end } = generateDominoValues(startingDominoCount);
+            const { solution, start, end } = generateDominoValues(startingDominoCount, today);
             setStartingTile(start);
             setEndTile(end);
             setSolution(solution);
             await preloadImages(svgs);
             handleResize();
-            openStartModal();
+            if(!beatenToday){
+                openStartModal();
+            } else {
+                setSkipAnimation(true);
+                setGrid(stats.currWinBoard);
+                setValidatedGrid(stats.currWinBoard);
+                setWinStates(stats.currWinStates);
+                setSolutionFound(true);
+                setScore(startingDominoCount);
+                setAnimatedWon(true);
+                setGameWon(true);
+                openWinModal();
+            }
+
             setIsInitialized(true);
         };
         init();
     }, []);
 
+
+    //Endless Board Setup
+    useEffect(() => {
+        if(endlessMode > 0){
+            const { solution, start, end } = generateDominoValues(startingDominoCount);
+            setStartingTile(start);
+            setEndTile(end);
+            setSolution(solution);
+            setWinStates(null);
+            handleClearBoard();
+            setEndlessKey(prev => prev + 1);
+            setSolutionFound(false);
+            setAnimatedWon(false);
+            setScore(0);
+            openWinModal();
+            soundGenerator.playClear();
+        }
+    }, [endlessMode]);
+
+    //Live Validation
     useEffect(() => {
         handleValidation();
     }, [grid]);
 
+    //On Daily Win (First Time)
     useEffect(() => {
         if(score === startingDominoCount && solutionFound && animatedWon){
             if(!gameWon){
                 setGameWon(true);
                 saveStats();
             }
-            openWinModal();
+            if(!isWinModalOpen) openWinModal();
         }
     }, [score, solutionFound, animatedWon]);
 
+    //Sound Effects Initialization
     useEffect(() => {
         const initAudio = () => {
             soundGenerator.init();
@@ -91,20 +139,23 @@ function DominoTrain() {
         return () => document.removeEventListener('click', initAudio);
     }, []);
 
+    //Solution Found (Not Necessarily Game Win)
     useEffect(() => {
         solutionFoundRef.current = solutionFound;
     }, [solutionFound]);
 
 
+    //Save/Update Stats
     const saveStats = () => {
         const today = new Date().toDateString();
 
         const stats = JSON.parse(localStorage.getItem('DailyDominoStats')) || {
             wins: 0,
-            winDates: [],
             streak: 0,
             maxStreak: 0,
-            lastWinDate: null
+            lastWinDate: null,
+            currWinStates: null,
+            currWinBoard: null
         };
 
         if(stats.lastWinDate === today) return;
@@ -117,10 +168,11 @@ function DominoTrain() {
 
         const updatedStats = {
             wins: stats.wins + 1,
-            winDates: [...stats.winDates, today],
             streak: newStreak,
             maxStreak: Math.max(newStreak, stats.maxStreak),
-            lastWinDate: today
+            lastWinDate: today,
+            currWinStates: dominoStates,
+            currWinBoard: grid
         };
 
         localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
@@ -141,6 +193,7 @@ function DominoTrain() {
     };
 
     const handlePlacement = (dominoId, cells) => {
+        setSkipAnimation(false);
         //check if within bounds of board
         for(const cell of cells){
             if(cell.gridX < 0 || cell.gridX >= GRID_WIDTH || cell.gridY < 0 || cell.gridY >= GRID_HEIGHT){
@@ -224,6 +277,15 @@ function DominoTrain() {
         setAnimatedWon(true);
     }
 
+    const handleEndless = () => {
+        setSkipAnimation(true);
+        setEndlessMode(prev => prev + 1);
+    }
+
+    const getDominoStates = (states) => {
+        setDominoStates(states);
+    }
+
     useEffect(() => {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
@@ -238,9 +300,9 @@ function DominoTrain() {
 
     return (
         <div className="window">
-            <Header howToPlayModal={openTutorialModal} statsModal={openStatsModal}/>
+            <Header howToPlayModal={openTutorialModal} statsModal={openStatsModal} endlessMode={endlessMode}/>
             <div className="domino-train">
-                <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"} solutionFound={solutionFound} handleWon={handleWon}/>
+                <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"} solutionFound={solutionFound} handleWon={handleWon} skipAnimation={skipAnimation}/>
                 <div className="grid" style={{boxShadow: (score === startingDominoCount && solutionFound) ? '0 0 2rem #4CAF50' : 'none'}}>
                     <Board CELL_SIZE={CELL_SIZE} grid={grid} solutionFound={solutionFound} score={score} topScore={startingDominoCount} validatedGrid={validatedGrid}/>
                     <div className="starting-tile" id="start-tile"
@@ -266,8 +328,9 @@ function DominoTrain() {
                         </div>
                     </div>
                 </div>
-                <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"} solutionFound={solutionFound} handleWon={handleWon}/>
+                <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"bot"} solutionFound={solutionFound} handleWon={handleWon} skipAnimation={skipAnimation}/>
                 <DominoHolder
+                    key={endlessKey}
                     CELL_SIZE={CELL_SIZE}
                     count={startingDominoCount}
                     solution={solution}
@@ -276,6 +339,8 @@ function DominoTrain() {
                     grid={grid}
                     validatedGrid={validatedGrid}
                     clearBoard={clearBoard}
+                    returnStates={getDominoStates}
+                    initialStates={winStates}
                 />
                 <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
                 {isStartModalOpen && (
@@ -295,7 +360,7 @@ function DominoTrain() {
                 )}
                 {isWinModalOpen && (
                     <div>
-                        <WinModal finalGrid={validatedGrid} isModalOpen={isWinModalOpen} updateCallback={openWinModal}/>
+                        <WinModal endlessMode={endlessMode} isModalOpen={isWinModalOpen} handleEndlessMode={handleEndless} updateCallback={openWinModal}/>
                     </div>
                 )}
             </div>

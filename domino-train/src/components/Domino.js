@@ -4,12 +4,12 @@ import {CELL_SIZE, HOLDER_SCALING} from "./Constants";
 import './style.css'
 import {soundGenerator} from "./SoundEffects";
 
-function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid}){
-    const [position, setPosition] = useState({x:0,y:0});
-    const [gridPosition, setGridPosition] = useState({x: -1, y: -1});
+function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid, returnState, initialState}){
+    const [position, setPosition] = useState(initialState ? {x:initialState.x, y:initialState.y} : {x:0,y:0});
+    const [gridPosition, setGridPosition] = useState(initialState ? {x:initialState.gridx, y:initialState.gridy} : {x: -1, y: -1});
     const initialRotation = 270;
-    const [rotation, setRotation]= useState(initialRotation);
-    const [isPlaced, setIsPlaced] = useState(false);
+    const [rotation, setRotation]= useState(initialState ? initialState.rotation : initialRotation);
+    const [isPlaced, setIsPlaced] = useState(initialState);
     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
 
     const containerRef = useRef(null);
@@ -266,6 +266,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
                 }
                 soundGenerator.playPutDown();
                 setIsPlaced(true);
+                returnState(id, snappedX, snappedY, gridX, gridY, rotationRef.current);
             } else {
                 setGridPosition({x: -1, y: -1});
                 setPosition({x:0,y:0});
@@ -463,9 +464,10 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
     const height = isVertical ? CELL_SIZE*2 : CELL_SIZE;
 
     return (
-        <div className="domino-wrapper" ref={containerRef} >
+        <div className="domino-wrapper" ref={containerRef} id={`container-${id}`}>
             <div
                 className="domino"
+                id={`domino-${id}`}
                 ref={dominoRef}
                 onMouseDown={handleMouseDown}
                 onTouchStart={handleMouseDown}
