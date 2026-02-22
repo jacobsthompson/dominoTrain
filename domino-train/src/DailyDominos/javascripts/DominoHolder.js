@@ -1,7 +1,7 @@
 import {useRef, useState} from "react";
-import Domino from "./Domino";
-import './style.css'
 import {GRID_WIDTH, HOLDER_SCALING} from "./Constants";
+import Domino from "./Domino";
+import '../stylesheets/dominoholder.css'
 
 export default function DominoHolder({count, solution, onPlacement, onRemoval, grid, validatedGrid, clearBoard, CELL_SIZE, returnStates, initialStates}){
     const [dominos] = useState(() => {

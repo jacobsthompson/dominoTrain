@@ -2,7 +2,7 @@ import icon from "../assets/DominoTrainIcon.svg";
 import statsIcon from "../assets/StatsIcon.svg";
 import howToIcon from "../assets/HowToIcon.svg";
 import moreIcon from "../assets/MoreIcon.svg";
-import './header.css'
+import '../stylesheets/header.css'
 
 export default function Header({howToPlayModal, statsModal, endlessMode}){
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];

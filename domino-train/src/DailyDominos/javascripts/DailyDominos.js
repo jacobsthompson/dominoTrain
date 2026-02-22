@@ -13,13 +13,13 @@ import statsIcon from '../assets/StatsIcon.svg';
 import howToIcon from '../assets/HowToIcon.svg';
 import moreIcon from '../assets/MoreIcon.svg'
 import icon from '../assets/DominoTrainIcon.svg';
-import './style.css';
+import '../stylesheets/dailydominos.css';
 
 
-function DominoTrain() {
+function DailyDominos() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
     const [endTile, setEndTile] = useState({dominoId: "end", x: GRID_WIDTH-1, y: Math.floor(GRID_HEIGHT/2), value: Math.floor(Math.random() * 6) + 1});
-    const [startingDominoCount, setStartingDominoCount] = useState(12   );
+    const [startingDominoCount, setStartingDominoCount] = useState(16);
     const [solution, setSolution] = useState([]);
 
     const [grid, setGrid] = useState(Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null)));
@@ -376,4 +376,4 @@ function DominoTrain() {
     );
 }
 
-export default DominoTrain;
+export default DailyDominos;

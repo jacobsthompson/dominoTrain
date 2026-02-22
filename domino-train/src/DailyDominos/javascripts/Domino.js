@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from "react";
 import DominoPips from "./DominoPips";
-import {CELL_SIZE, HOLDER_SCALING} from "./Constants";
-import './style.css'
+import {HOLDER_SCALING} from "./Constants";
 import {soundGenerator} from "./SoundEffects";
+import '../stylesheets/domino.css'
 
 function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid, returnState, initialState}){
     const [position, setPosition] = useState(initialState ? {x:initialState.x, y:initialState.y} : {x:0,y:0});

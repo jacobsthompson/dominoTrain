@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import "./scoreboard.css"
+import "../stylesheets/scoreboard.css"
 import {soundGenerator} from "./SoundEffects";
 import {GRID_WIDTH} from "./Constants";
 

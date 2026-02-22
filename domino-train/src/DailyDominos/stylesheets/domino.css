@@ -1,0 +1,34 @@
+.domino-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.domino {
+    position: absolute;
+    user-select: none;
+    display: flex;
+    border-radius: 0.5rem;
+}
+
+.domino-half {
+    border: 0.2rem solid #cccccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #191919;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.top-half-domino {
+    border-style: none none none none;
+}
+
+.domino-divider {
+    background-color: #cccccc;
+}
+
+.bot-half-domino {
+    border-style: none none solid none;
+}

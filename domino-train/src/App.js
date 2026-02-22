@@ -1,9 +1,9 @@
-import DominoTrain from "./components/DominoTrain";
+import DailyDominos from "./DailyDominos/javascripts/DailyDominos";
 
 function App() {
     return(
         <div className="app" style={{backgroundColor: '#191919'}}>
-            <DominoTrain/>
+            <DailyDominos/>
         </div>
     );
 }

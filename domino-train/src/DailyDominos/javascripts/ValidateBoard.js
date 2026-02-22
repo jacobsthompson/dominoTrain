@@ -142,7 +142,6 @@ function trimPath(grid, startingTile, endTile){
         for(let row = 0; row < GRID_WIDTH; row++){
             if(grid[col][row] !== null){
                 let currentTile = grid[col][row];
-                if (currentTile.x === startingTile.x && currentTile.y === endTile.y) ids[currentTile.dominoId] = 100;
                 let adjTiles = confirmValidAdjacent(grid, currentTile, startingTile, endTile);
                 if(adjTiles.length > 1){
                     ids[currentTile.dominoId] = (ids[currentTile.dominoId] || 0) + 1;

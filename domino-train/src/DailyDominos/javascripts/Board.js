@@ -1,4 +1,4 @@
-import './style.css'
+import '../stylesheets/board.css'
 
 function checkValidCell(grid, validatedGrid, x,y) {
     if (grid[y][x] !== null) {
@@ -28,7 +28,8 @@ function Board({grid, validatedGrid, solutionFound, CELL_SIZE}){
                                 height: CELL_SIZE,
                                 boxShadow: (solutionFound && validatedGrid) ? checkValidCell(grid, validatedGrid,x,y) : 'none',
                                 zIndex: checkFullCell(grid,x,y) ? 1 : 0,
-                                borderRadius: checkFullCell(grid,x,y) ? '0.5rem' : '0'
+                                borderRadius: checkFullCell(grid,x,y) ? '0.5rem' : '0',
+                                backgroundColor: grid[y][x] === -1 ? '#555' : '#191919'
 
                             }}
                         />

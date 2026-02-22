@@ -1,10 +1,10 @@
-import './modal.css'
-import './tutorialmodal.css'
-import icon from "../assets/DominoTrainIcon.svg";
-import TutorialDomino from "./TutorialDomino";
 import {useEffect, useRef, useState} from "react";
 import {soundGenerator} from "./SoundEffects";
+import TutorialDomino from "./TutorialDomino";
 import FakeDomino from "./FakeDomino";
+import icon from "../assets/DominoTrainIcon.svg";
+import '../stylesheets/modal.css'
+import '../stylesheets/tutorialmodal.css'
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const date = new Date();

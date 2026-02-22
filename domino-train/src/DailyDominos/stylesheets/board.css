@@ -1,0 +1,13 @@
+.board {
+    display: inline-block;
+    border: 0.09rem #ccc;
+    border-style: none solid solid solid;
+    background-color: #555;
+    position: relative;
+}
+
+.cell {
+    background-color: #191919;
+    border: 0.09rem solid #555;
+    box-sizing: border-box;
+}

@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
-import DominoPips from "./DominoPips";
-import './style.css'
 import {soundGenerator} from "./SoundEffects";
+import DominoPips from "./DominoPips";
+import  '../stylesheets/domino.css';
 
 function TutorialDomino({CELL_SIZE, onRotation, onFirstDown, onFirstUp, onFirstMove, onFirstRotate, validPlace}){
     const value1 = 1;

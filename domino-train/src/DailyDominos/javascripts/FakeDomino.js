@@ -1,5 +1,5 @@
 import DominoPips from "./DominoPips";
-import './style.css'
+import '../stylesheets/domino.css';
 
 function FakeDomino({CELL_SIZE, value1, value2, rotation, color, topTile= false}){
     const getRotationValues = (rot) => {

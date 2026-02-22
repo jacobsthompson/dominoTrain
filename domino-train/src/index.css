@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Karrik";
-  src: local(Karrik), url("./fonts/Karrik-Regular.ttf") format("truetype");
+  src: local(Karrik), url("DailyDominos/assets/Karrik-Regular.ttf") format("truetype");
 }
 
 body {

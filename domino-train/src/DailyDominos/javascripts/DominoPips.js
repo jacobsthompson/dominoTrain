@@ -1,4 +1,4 @@
-import './pips.css'
+import '../stylesheets/dominopips.css'
 
 function DominoPips({ value, color, inHolder, CELL_SIZE }){
     const renderPips = () => {
