@@ -1,8 +1,12 @@
 # Daily Dominos
 
+![Alt text](domino-train/src/DailyDominos/assets/DailyDominosLogo.svg)
+
 Can you connect all the Dominos?
 A Domino Train Daily Game Website. Play a new board every day, or play in randomly generated endless mode!
 A React Javascript Web Project developed by Jacob Thompson 2026
+
+Play here: https://dailydominos.vercel.app/
 
 How To Play:
 1. Connect all the dominos from the Start Tile to the Finish Tile!
