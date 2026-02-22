@@ -1,7 +1,7 @@
-export const ODD_GRID_SIZE = 7;
+export const GRID_SIZE = 8;
 
-export const GRID_WIDTH = ODD_GRID_SIZE+1;
-export const GRID_HEIGHT = ODD_GRID_SIZE+1;
+export const GRID_WIDTH = GRID_SIZE;
+export const GRID_HEIGHT = GRID_SIZE;
 
 export const CELL_SIZE = 50;
 export const HOLDER_SCALING = 0.9;
