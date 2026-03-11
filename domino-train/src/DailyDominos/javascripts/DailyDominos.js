@@ -75,8 +75,13 @@ function DailyDominos() {
             setSolution(solution);
             await preloadImages(svgs);
             handleResize();
+            updateStreak();
             if(!beatenToday){
-                openStartModal();
+                if(stats){
+                    openStartModal();
+                } else {
+                    openTutorialModal();
+                }
             } else {
                 setSkipAnimation(true);
                 setGrid(stats.currWinBoard);
@@ -146,6 +151,27 @@ function DailyDominos() {
 
 
     //Save/Update Stats
+    const updateStreak = () => {
+        const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+        if(stats){
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            if(stats.lastWinDate !== today.toDateString() || stats.lastWinDate !== yesterday.toDateString()){
+                const updatedStats = {
+                    wins: stats.wins,
+                    streak: 0,
+                    maxStreak: stats.maxStreak,
+                    lastWinDate: stats.lastWinDate,
+                    currWinStates: stats.currWinStates,
+                    currWinBoard: stats.currWinBoard
+                };
+
+                localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
+            }
+        }
+    }
+
     const saveStats = () => {
         const today = new Date().toDateString();
 
