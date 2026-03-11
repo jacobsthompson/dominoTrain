@@ -92,7 +92,7 @@ export function WinModal({endlessMode, isModalOpen, handleEndlessMode, updateCal
     );
 }
 
-export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback, buttonText = "Play Puzzle", firstTutorial = false}) {
+export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback, buttonText = "Play Puzzle", firstTutorial}) {
     const cellSize = CELL_SIZE * 4 / 5;
 
     const [firstMouseDown, setFirstMouseDown] = useState(false);
@@ -130,14 +130,6 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
     const openStartModal = () => {
         setIsStartModalOpen(!isStartModalOpen);
     }
-
-    useEffect(() => {
-        if(firstTutorial){
-            buttonText = "Play Puzzle";
-        } else {
-            buttonText = "Back To Game"
-        }
-    }, [firstTutorial]);
 
     useEffect(() => {
         firstMouseDownRef.current = firstMouseDown;
@@ -289,7 +281,12 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                         </div>
                     </div>
                     <div className="button-container">
-                        <button className="button" onClick={updateCallback}>{buttonText}</button>
+                        {firstTutorial && (
+                            <button className="button" onClick={openStartModal}>Play Puzzle</button>
+                        )}
+                        {!firstTutorial && (
+                            <button className="button" onClick={updateCallback}>Back To Game</button>
+                        )}
                     </div>
                 </div>
             )}

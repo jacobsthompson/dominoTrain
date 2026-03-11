@@ -80,6 +80,7 @@ function DailyDominos() {
             if(!beatenToday){
                 if(stats){
                     openStartModal();
+                    setFirstTutorial(false);
                 } else {
                     openTutorialModal();
                     setFirstTutorial(true);
