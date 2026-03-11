@@ -153,14 +153,14 @@ function DailyDominos() {
     }, [solutionFound]);
 
 
-    //Save/Update Stats
+    //Save/Update Streak
     const updateStreak = () => {
         const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
         if(stats){
             const today = new Date();
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            if(stats.lastWinDate !== today.toDateString() || stats.lastWinDate !== yesterday.toDateString()){
+            if(stats.lastWinDate !== today.toDateString() && stats.lastWinDate !== yesterday.toDateString()){
                 const updatedStats = {
                     wins: stats.wins,
                     streak: 0,
