@@ -34,6 +34,7 @@ function DailyDominos() {
 
     const [isStartModalOpen, setIsStartModalOpen] = useState(false);
     const [isTutorialModalOpen, setIsTutorialModalOpen] = useState(false);
+    const [firstTutorial, setFirstTutorial] = useState(false);
     const [isWinModalOpen, setIsWinModalOpen] = useState(false);
     const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
 
@@ -81,6 +82,7 @@ function DailyDominos() {
                     openStartModal();
                 } else {
                     openTutorialModal();
+                    setFirstTutorial(true);
                 }
             } else {
                 setSkipAnimation(true);
@@ -289,6 +291,7 @@ function DailyDominos() {
 
     const openTutorialModal = () => {
         setIsTutorialModalOpen(!isTutorialModalOpen);
+        if(firstTutorial) setFirstTutorial(false);
     }
 
     const openWinModal = () => {
@@ -384,7 +387,7 @@ function DailyDominos() {
                 )}
                 {isTutorialModalOpen && (
                     <div>
-                        <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal} buttonText={"Back To Game"}/>
+                        <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal} buttonText={"Back To Game"} firstTutorial={firstTutorial}/>
                     </div>
                 )}
                 {isStatsModalOpen && (

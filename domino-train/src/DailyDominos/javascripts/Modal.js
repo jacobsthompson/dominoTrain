@@ -92,7 +92,7 @@ export function WinModal({endlessMode, isModalOpen, handleEndlessMode, updateCal
     );
 }
 
-export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback, buttonText = "Play Puzzle"}) {
+export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback, buttonText = "Play Puzzle", firstTutorial = false}) {
     const cellSize = CELL_SIZE * 4 / 5;
 
     const [firstMouseDown, setFirstMouseDown] = useState(false);
@@ -124,6 +124,20 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
 
     const [isMobile, setIsMobile] = useState(0);
     const mobileRotationText = ["While Dragging, Press R or Right Click to Rotate.", "While Dragging, Pinch and Twist to Rotate."];
+
+    const [isStartModalOpen, setIsStartModalOpen] = useState(false);
+
+    const openStartModal = () => {
+        setIsStartModalOpen(!isStartModalOpen);
+    }
+
+    useEffect(() => {
+        if(firstTutorial){
+            buttonText = "Play Puzzle";
+        } else {
+            buttonText = "Back To Game"
+        }
+    }, [firstTutorial]);
 
     useEffect(() => {
         firstMouseDownRef.current = firstMouseDown;
@@ -201,82 +215,89 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
     return(
         <div className="modal">
             <div className="modal-background" onClick={updateCallback}/>
-            <div className="tutorial-content" style={{zIndex: 1000}}>
-                <div className="tutorial-container" style={{zIndex: 1000}}>
-                    <img src={icon} className="modal-icon" alt="Domino Train" width="75px"/>
-                    <div className="tutorial-header">Connect all {amountOfTiles} dominos from Start to Finish!</div>
-                    <div className="tutorial-text">Dominos connect to Matching Pip values.</div>
-                    <div className="example-area">
-                        <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={1} value2={2} rotation={270}/>
-                        <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={2} value2={3} rotation={270}/>
-                        <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={4} value2={5} rotation={270}/>
-                    </div>
-                    <div className="tutorial-text">Dominos must be connected on both ends.</div>
-                    <div className="example-area" style={{width: `${3.75 * 2.5}rem`, height: `${1.9 * 2}rem`}}>
-                        <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={1} value2={2} rotation={270}/>
-                        <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={2} value2={3} rotation={0}/>
-                        <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={2} value2={4} rotation={270}/>
-                    </div>
-                    <div className="tutorial-text">Dominos cannot connected in parallel.</div>
-                    <div className="example-area">
-                        <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={1} value2={2} rotation={270}
-                                    topTile={true}/>
-                        <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={3} value2={3} rotation={270}
-                                    topTile={true}/>
-                    </div>
-                    <div className="example-area">
-                        <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={1} value2={2} rotation={270}/>
-                        <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={2} value2={3} rotation={270}/>
-                        <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={3} value2={4} rotation={270}/>
-                    </div>
-                    <div className="tutorial-header">Controls</div>
-                    <div className="tutorial-text-container">
-                        <div ref={downText} className="tutorial-text"
-                             style={{color: firstMouseDown ? "#4CAF50" : "#f8f8ff"}}>
-                            Click and Hold to Pick Up.
+            {!isStartModalOpen && (
+                <div className="tutorial-content" style={{zIndex: 1000}}>
+                    <div className="tutorial-container" style={{zIndex: 1000}}>
+                        <img src={icon} className="modal-icon" alt="Domino Train" width="75px"/>
+                        <div className="tutorial-header">Connect all {amountOfTiles} dominos from Start to Finish!</div>
+                        <div className="tutorial-text">Dominos connect to Matching Pip values.</div>
+                        <div className="example-area">
+                            <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={1} value2={2} rotation={270}/>
+                            <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={2} value2={3} rotation={270}/>
+                            <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={4} value2={5} rotation={270}/>
                         </div>
-                        <div ref={moveText} className="tutorial-text"
-                             style={{color: firstMouseMove ? "#4CAF50" : "#f8f8ff"}}>
-                            Hold and Drag to Move.
+                        <div className="tutorial-text">Dominos must be connected on both ends.</div>
+                        <div className="example-area" style={{width: `${3.75 * 2.5}rem`, height: `${1.9 * 2}rem`}}>
+                            <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={1} value2={2} rotation={270}/>
+                            <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={2} value2={3} rotation={0}/>
+                            <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={2} value2={4} rotation={270}/>
                         </div>
-                        <div ref={rotateText} className="tutorial-text"
-                             style={{color: firstRotate ? "#4CAF50" : "#f8f8ff"}}>
-                            {mobileRotationText[isMobile]}
+                        <div className="tutorial-text">Dominos cannot connected in parallel.</div>
+                        <div className="example-area">
+                            <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={1} value2={2} rotation={270}
+                                        topTile={true}/>
+                            <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={3} value2={3} rotation={270}
+                                        topTile={true}/>
                         </div>
-                        <div ref={upText} className="tutorial-text"
-                             style={{color: firstMouseUp ? "#4CAF50" : "#f8f8ff"}}>
-                            Release over Grid to Place.
+                        <div className="example-area">
+                            <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={1} value2={2} rotation={270}/>
+                            <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={2} value2={3} rotation={270}/>
+                            <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={3} value2={4} rotation={270}/>
                         </div>
-                    </div>
-                    <div className="tutorial-domino-holder" style={{width: cellSize * 3, height: cellSize * 3}}>
-                        <div className="tutorial-domino-container" style={{
-                            width: isVertical ? cellSize : cellSize * 2,
-                            height: isVertical ? cellSize * 2 : cellSize
-                        }}>
-                            <div className="tutorial-domino-wrapper"
-                                 style={{
-                                     position: 'relative',
-                                     width: cellSize * 2,
-                                     height: cellSize,
-                                     touchAction: 'none'
-                                 }}>
-                                <TutorialDomino
-                                    CELL_SIZE={cellSize}
-                                    onRotation={handleRotation}
-                                    onFirstDown={handleFirstDown}
-                                    onFirstMove={handleFirstMove}
-                                    onFirstUp={handleFirstUp}
-                                    onFirstRotate={handleFirstRotate}
-                                    validPlace={firstMouseUp}
-                                />
+                        <div className="tutorial-header">Controls</div>
+                        <div className="tutorial-text-container">
+                            <div ref={downText} className="tutorial-text"
+                                 style={{color: firstMouseDown ? "#4CAF50" : "#f8f8ff"}}>
+                                Click and Hold to Pick Up.
+                            </div>
+                            <div ref={moveText} className="tutorial-text"
+                                 style={{color: firstMouseMove ? "#4CAF50" : "#f8f8ff"}}>
+                                Hold and Drag to Move.
+                            </div>
+                            <div ref={rotateText} className="tutorial-text"
+                                 style={{color: firstRotate ? "#4CAF50" : "#f8f8ff"}}>
+                                {mobileRotationText[isMobile]}
+                            </div>
+                            <div ref={upText} className="tutorial-text"
+                                 style={{color: firstMouseUp ? "#4CAF50" : "#f8f8ff"}}>
+                                Release over Grid to Place.
+                            </div>
+                        </div>
+                        <div className="tutorial-domino-holder" style={{width: cellSize * 3, height: cellSize * 3}}>
+                            <div className="tutorial-domino-container" style={{
+                                width: isVertical ? cellSize : cellSize * 2,
+                                height: isVertical ? cellSize * 2 : cellSize
+                            }}>
+                                <div className="tutorial-domino-wrapper"
+                                     style={{
+                                         position: 'relative',
+                                         width: cellSize * 2,
+                                         height: cellSize,
+                                         touchAction: 'none'
+                                     }}>
+                                    <TutorialDomino
+                                        CELL_SIZE={cellSize}
+                                        onRotation={handleRotation}
+                                        onFirstDown={handleFirstDown}
+                                        onFirstMove={handleFirstMove}
+                                        onFirstUp={handleFirstUp}
+                                        onFirstRotate={handleFirstRotate}
+                                        validPlace={firstMouseUp}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div className="button-container">
+                        <button className="button" onClick={updateCallback}>{buttonText}</button>
+                    </div>
                 </div>
-                <div className="button-container">
-                    <button className="button" onClick={updateCallback}>{buttonText}</button>
+            )}
+            {isStartModalOpen && (
+                <div>
+                    <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={amountOfTiles} isModalOpen={isStartModalOpen} updateCallback={updateCallback}/>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
