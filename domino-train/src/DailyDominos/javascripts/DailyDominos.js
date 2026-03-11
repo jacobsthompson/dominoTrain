@@ -50,6 +50,9 @@ function DailyDominos() {
     const [winStates, setWinStates] = useState(null);
     const [dominoStates, setDominoStates] = useState(null);
 
+    const dominoStateHistory = useRef([]);
+    const gridStateHistory = useRef([]);
+
     const [skipAnimation, setSkipAnimation] = useState(false);
 
     const svgs = [statsIcon, howToIcon, moreIcon, icon];
@@ -279,7 +282,8 @@ function DailyDominos() {
     }
 
     const handleUndo = () => {
-
+        setDominoStates(dominoStateHistory.current[-1]);
+        setGrid(gridStateHistory.current[-1]);
     }
 
     const handleRedo = () => {
@@ -322,6 +326,8 @@ function DailyDominos() {
 
     const getDominoStates = (states) => {
         setDominoStates(states);
+        dominoStateHistory.current.push(states);
+        gridStateHistory.current.push(grid);
     }
 
     useEffect(() => {
