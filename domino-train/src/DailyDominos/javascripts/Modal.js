@@ -282,7 +282,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                     </div>
                     <div className="button-container">
                         {firstTutorial && (
-                            <button className="button" onClick={openStartModal}>Play Puzzle</button>
+                            <button className="button" onClick={openStartModal}>Begin</button>
                         )}
                         {!firstTutorial && (
                             <button className="button" onClick={updateCallback}>Back To Game</button>

@@ -278,6 +278,14 @@ function DailyDominos() {
         soundGenerator.playClear();
     }
 
+    const handleUndo = () => {
+
+    }
+
+    const handleRedo = () => {
+
+    }
+
     const handleResize = () => {
         if(window.innerWidth < 500){
             SET_CELL_SIZE(40);
@@ -373,6 +381,8 @@ function DailyDominos() {
                     initialStates={winStates}
                 />
                 <div className="sub-button-container">
+                    <a className="sub-button" onClick={handleUndo}>Undo</a>
+                    <div>|</div>
                     {endlessMode > 0 && (
                         <a className="sub-button" onClick={handleEndless}>New Game</a>
                     )}
@@ -380,6 +390,8 @@ function DailyDominos() {
                         <div>|</div>
                     )}
                     <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
+                    <div>|</div>
+                    <a className="sub-button" onClick={handleRedo}>Redo</a>
                 </div>
                 {isStartModalOpen && (
                     <div>
