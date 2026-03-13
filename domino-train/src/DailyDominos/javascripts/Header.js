@@ -12,6 +12,7 @@ export default function Header({howToPlayModal, statsModal, endlessMode}){
 
     const openLink = () => {
         window.open("www.jacobsthompson.com");
+
     }
 
     return(
