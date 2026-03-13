@@ -50,8 +50,10 @@ function DailyDominos() {
     const [winStates, setWinStates] = useState(null);
     const [dominoStates, setDominoStates] = useState(null);
 
-    const dominoStateHistory = useRef([]);
-    const gridStateHistory = useRef([]);
+    const dominoHistory = useRef([]);
+    const gridHistory = useRef([grid]);
+    const UndoRef = useRef(1);
+    const RedoRef = useRef(0);
 
     const [skipAnimation, setSkipAnimation] = useState(false);
 
@@ -226,17 +228,18 @@ function DailyDominos() {
 
     const handlePlacement = (dominoId, cells) => {
         setSkipAnimation(false);
+
         //check if within bounds of board
         for(const cell of cells){
             if(cell.gridX < 0 || cell.gridX >= GRID_WIDTH || cell.gridY < 0 || cell.gridY >= GRID_HEIGHT){
-                // console.log("out of bounds");
+                gridHistory.current.push(grid);
                 return false;
             }
         }
         //check for any overlapping dominos
         for(const cell of cells) {
             if (grid[cell.gridY][cell.gridX] !== null) {
-                // console.log("overlap");
+                gridHistory.current.push(grid);
                 return false;
             }
         }
@@ -250,6 +253,8 @@ function DailyDominos() {
             };
         }
         setGrid(newGrid);
+        // gridHistory.slice(0, gridHistory.length - (UndoRef.current + 1) + RedoRef.current).push(newGrid);
+        gridHistory.current.push(newGrid);
         setValidatedGrid(null);
         return true;
     };
@@ -270,24 +275,16 @@ function DailyDominos() {
         setScore(score);
         setSolutionFound(foundGoal);
         setAnimatedWon(false);
-        // checkForWin();
     }
 
     const handleClearBoard = () => {
         const clearedGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
         setGrid(clearedGrid);
+        gridHistory.current.push(clearedGrid);
+        dominoHistory.current.push({...dominoHistory.current.at(31)});
         handleValidation();
         setClearBoard(prev => prev + 1);
         soundGenerator.playClear();
-    }
-
-    const handleUndo = () => {
-        setDominoStates(dominoStateHistory.current[-1]);
-        setGrid(gridStateHistory.current[-1]);
-    }
-
-    const handleRedo = () => {
-
     }
 
     const handleResize = () => {
@@ -326,8 +323,31 @@ function DailyDominos() {
 
     const getDominoStates = (states) => {
         setDominoStates(states);
-        dominoStateHistory.current.push(states);
-        gridStateHistory.current.push(grid);
+        dominoHistory.current.push({...states});
+        console.log(dominoHistory.current);
+        // console.log(gridHistory.current.length);
+    }
+
+    function checkUndoCap(){ return (gridHistory.current.length - UndoRef.current + RedoRef.current) > 0; }
+    function checkRedoCap(){ return (gridHistory.current.length - UndoRef.current + RedoRef.current) < gridHistory.current.length-1; }
+
+    const handleUndo = () => {
+        if(checkUndoCap()){
+            UndoRef.current = UndoRef.current + 1;
+            console.log(dominoHistory.current);
+            console.log(dominoHistory.current.at(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current));
+            console.log(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current);
+            setWinStates(dominoHistory.current.at(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current));
+            setGrid(gridHistory.current.at(gridHistory.current.length - UndoRef.current + RedoRef.current));
+        }
+    }
+
+    const handleRedo = () => {
+        if(checkRedoCap()){
+            RedoRef.current = RedoRef.current + 1;
+            setWinStates(dominoHistory.current.at(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current));
+            setGrid(gridHistory.current.at(gridHistory.current.length - UndoRef.current + RedoRef.current));
+        }
     }
 
     useEffect(() => {
@@ -387,7 +407,10 @@ function DailyDominos() {
                     initialStates={winStates}
                 />
                 <div className="sub-button-container">
-                    <a className="sub-button" onClick={handleUndo}>Undo</a>
+                    <a className="sub-button" onClick={handleUndo} style={{
+                        color: checkUndoCap() ? '#ccc' : '#555',
+                        cursor: checkUndoCap() ? 'pointer' : 'auto'
+                    }}>Undo</a>
                     <div>|</div>
                     {endlessMode > 0 && (
                         <a className="sub-button" onClick={handleEndless}>New Game</a>
@@ -397,7 +420,10 @@ function DailyDominos() {
                     )}
                     <a className="sub-button" onClick={handleClearBoard}>Clear Board</a>
                     <div>|</div>
-                    <a className="sub-button" onClick={handleRedo}>Redo</a>
+                    <a className="sub-button" onClick={handleRedo} style={{
+                        color: checkRedoCap() ? '#ccc' : '#555',
+                        cursor: checkRedoCap() ? 'pointer' : 'auto'
+                    }}>Redo</a>
                 </div>
                 {isStartModalOpen && (
                     <div>

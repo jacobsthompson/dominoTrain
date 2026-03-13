@@ -1,4 +1,4 @@
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {GRID_WIDTH, HOLDER_SCALING} from "./Constants";
 import Domino from "./Domino";
 import '../stylesheets/dominoholder.css'
@@ -38,9 +38,13 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
 
     const dominoStates = useRef({});
 
-    const getDominoState = (dominoId, x, y, gridx, gridy, rotation) => {
-        dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation};
+    const getDominoState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {
+        dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation, isPlaced: isPlaced};
         returnStates(dominoStates.current);
+    }
+
+    const getClearState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {
+        dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation, isPlaced: isPlaced};
     }
 
    return(
@@ -61,6 +65,7 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
                            grid={grid}
                            clearBoard={clearBoard}
                            returnState={getDominoState}
+                           clearState={getClearState}
                            initialState={initialStates?.[domino.id]}
                        />
                    </div>

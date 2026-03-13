@@ -4,12 +4,12 @@ import {HOLDER_SCALING} from "./Constants";
 import {soundGenerator} from "./SoundEffects";
 import '../stylesheets/domino.css'
 
-function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid, returnState, initialState}){
+function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid, returnState, initialState, clearState}){
     const [position, setPosition] = useState(initialState ? {x:initialState.x, y:initialState.y} : {x:0,y:0});
     const [gridPosition, setGridPosition] = useState(initialState ? {x:initialState.gridx, y:initialState.gridy} : {x: -1, y: -1});
     const initialRotation = 270;
     const [rotation, setRotation]= useState(initialState ? initialState.rotation : initialRotation);
-    const [isPlaced, setIsPlaced] = useState(initialState);
+    const [isPlaced, setIsPlaced] = useState(initialState ? initialState.isPlaced: false);
     const [isDraggingVisual, setIsDraggingVisual] = useState(false);
 
     const containerRef = useRef(null);
@@ -24,14 +24,20 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
     const neededRotationAngle = 10;
 
     useEffect(() => {
+        returnState(id, position.x, position.y, gridPosition.x, gridPosition.y, rotationRef.current, isPlaced);
+    }, []);
+
+    useEffect(() => {
         if(clearBoard !== undefined && clearBoard > 0){
             setPosition({x: 0, y: 0});
+            setGridPosition({x: -1, y: -1});
             setIsPlaced(false);
             setRotation(initialRotation);
             if (isDraggingRef.current && onDragEnd) {
                 onDragEnd(id);
                 isDraggingRef.current = false;
             }
+            clearState(id, 0, 0, -1, -1, initialRotation, false);
         }
         if(dominoRef.current){
             dominoRef.current.style.left = '0px';
@@ -46,6 +52,16 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
     useEffect(() => {
         readjustPlacement();
     }, [CELL_SIZE]);
+
+    useEffect(() => {
+        if(initialState){
+            console.log("CHANGING", id);
+            setPosition({x: initialState.x, y: initialState.y});
+            setGridPosition({x: initialState.gridx, y: initialState.gridy});
+            setRotation(initialState.rotation);
+            setIsPlaced(initialState.isPlaced);
+        }
+    }, [initialState]);
 
     const getRotationValues = (rot) => {
         switch(rot){
@@ -266,11 +282,12 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
                 }
                 soundGenerator.playPutDown();
                 setIsPlaced(true);
-                returnState(id, snappedX, snappedY, gridX, gridY, rotationRef.current);
+                returnState(id, snappedX, snappedY, gridX, gridY, rotationRef.current, true);
             } else {
                 setGridPosition({x: -1, y: -1});
                 setPosition({x:0,y:0});
                 setRotation(initialRotation);
+                returnState(id, 0, 0, -1, -1, initialRotation, false);
                 if (dominoRef.current) {
                   dominoRef.current.style.left = '0px';
                   dominoRef.current.style.top = '0px';
