@@ -228,12 +228,13 @@ function DailyDominos() {
 
 
     function ResetHistory(time){
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             dominoHistory.current = [dominoHistory.current.at(-1)];
             gridHistory.current = [gridHistory.current.at(-1)];
             HistoryRef.current = 1;
             setHistorySize(1);
         }, time);
+        return () => clearTimeout(timer);
     }
 
     function sliceHistory(grid, type = "placement"){

@@ -24,7 +24,10 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
     const neededRotationAngle = 10;
 
     useEffect(() => {
-        returnState(id, position.x, position.y, gridPosition.x, gridPosition.y, rotationRef.current, isPlaced);
+        const timer = setTimeout(() => {
+            returnState(id, position.x, position.y, gridPosition.x, gridPosition.y, rotationRef.current, isPlaced);
+        }, 50);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
