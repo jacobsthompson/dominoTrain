@@ -11,7 +11,7 @@ export default function Header({howToPlayModal, statsModal, endlessMode}){
     const subtitle = endlessMode > 0 ? "Endless Mode" : months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
 
     const openLink = () => {
-        window.open("www.jacobsthompson.com");
+        window.open("https://www.jacobsthompson.com");
 
     }
 
