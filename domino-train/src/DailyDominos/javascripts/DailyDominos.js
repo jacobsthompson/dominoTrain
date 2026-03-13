@@ -52,8 +52,8 @@ function DailyDominos() {
 
     const dominoHistory = useRef([]);
     const gridHistory = useRef([grid]);
-    const UndoRef = useRef(1);
-    const RedoRef = useRef(0);
+    const HistoryRef = useRef(1);
+    const [historySize, setHistorySize] = useState(1);
 
     const [skipAnimation, setSkipAnimation] = useState(false);
 
@@ -123,6 +123,7 @@ function DailyDominos() {
             setEndlessKey(prev => prev + 1);
             if(isWinModalOpen) openWinModal();
             soundGenerator.playClear();
+            ResetHistory(50);
         }
     }, [endlessMode]);
 
@@ -156,7 +157,6 @@ function DailyDominos() {
     useEffect(() => {
         solutionFoundRef.current = solutionFound;
     }, [solutionFound]);
-
 
     //Save/Update Streak
     const updateStreak = () => {
@@ -226,20 +226,44 @@ function DailyDominos() {
         console.log("========================");
     };
 
+
+    function ResetHistory(time){
+        setTimeout(() => {
+            dominoHistory.current = [dominoHistory.current.at(-1)];
+            gridHistory.current = [gridHistory.current.at(-1)];
+            HistoryRef.current = 1;
+            setHistorySize(1);
+        }, time);
+    }
+
+    function sliceHistory(grid, type = "placement"){
+        gridHistory.current = gridHistory.current.slice(0, gridHistory.current.length - HistoryRef.current + 1);
+        dominoHistory.current = dominoHistory.current.slice(0, dominoHistory.current.length - HistoryRef.current + 1);
+        gridHistory.current.push(grid);
+        HistoryRef.current = 1;
+        setHistorySize(gridHistory.current.length);
+
+        if(type === "clear") {
+            dominoHistory.current.push({...dominoHistory.current.at(0)});
+        }
+
+        setWinStates(dominoHistory.current.at(-1));
+    }
+
     const handlePlacement = (dominoId, cells) => {
         setSkipAnimation(false);
 
         //check if within bounds of board
         for(const cell of cells){
             if(cell.gridX < 0 || cell.gridX >= GRID_WIDTH || cell.gridY < 0 || cell.gridY >= GRID_HEIGHT){
-                gridHistory.current.push(grid);
+                sliceHistory(grid);
                 return false;
             }
         }
         //check for any overlapping dominos
         for(const cell of cells) {
             if (grid[cell.gridY][cell.gridX] !== null) {
-                gridHistory.current.push(grid);
+                sliceHistory(grid);
                 return false;
             }
         }
@@ -253,8 +277,7 @@ function DailyDominos() {
             };
         }
         setGrid(newGrid);
-        // gridHistory.slice(0, gridHistory.length - (UndoRef.current + 1) + RedoRef.current).push(newGrid);
-        gridHistory.current.push(newGrid);
+        sliceHistory(newGrid);
         setValidatedGrid(null);
         return true;
     };
@@ -280,8 +303,9 @@ function DailyDominos() {
     const handleClearBoard = () => {
         const clearedGrid = Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(null));
         setGrid(clearedGrid);
-        gridHistory.current.push(clearedGrid);
-        dominoHistory.current.push({...dominoHistory.current.at(31)});
+        if(JSON.stringify(gridHistory.current.at(-1)) !== JSON.stringify(clearedGrid)){
+            sliceHistory(clearedGrid, "clear");
+        }
         handleValidation();
         setClearBoard(prev => prev + 1);
         soundGenerator.playClear();
@@ -297,11 +321,15 @@ function DailyDominos() {
 
     const openStartModal = () => {
         setIsStartModalOpen(!isStartModalOpen);
+        ResetHistory(0);
     }
 
     const openTutorialModal = () => {
         setIsTutorialModalOpen(!isTutorialModalOpen);
-        if(firstTutorial) setFirstTutorial(false);
+        if(firstTutorial) {
+            ResetHistory(0);
+            setFirstTutorial(false);
+        }
     }
 
     const openWinModal = () => {
@@ -323,30 +351,26 @@ function DailyDominos() {
 
     const getDominoStates = (states) => {
         setDominoStates(states);
-        dominoHistory.current.push({...states});
-        console.log(dominoHistory.current);
-        // console.log(gridHistory.current.length);
+        dominoHistory.current.push(structuredClone(states));
+        setWinStates(dominoHistory.current.at(-1));
     }
 
-    function checkUndoCap(){ return (gridHistory.current.length - UndoRef.current + RedoRef.current) > 0; }
-    function checkRedoCap(){ return (gridHistory.current.length - UndoRef.current + RedoRef.current) < gridHistory.current.length-1; }
+    function checkUndoCap(){ return (gridHistory.current.length - HistoryRef.current) > 0; }
+    function checkRedoCap(){ return (gridHistory.current.length - HistoryRef.current) < gridHistory.current.length-1; }
 
     const handleUndo = () => {
         if(checkUndoCap()){
-            UndoRef.current = UndoRef.current + 1;
-            console.log(dominoHistory.current);
-            console.log(dominoHistory.current.at(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current));
-            console.log(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current);
-            setWinStates(dominoHistory.current.at(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current));
-            setGrid(gridHistory.current.at(gridHistory.current.length - UndoRef.current + RedoRef.current));
+            HistoryRef.current += 1;
+            setWinStates(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current));
+            setGrid(gridHistory.current.at(gridHistory.current.length - HistoryRef.current));
         }
     }
 
     const handleRedo = () => {
         if(checkRedoCap()){
-            RedoRef.current = RedoRef.current + 1;
-            setWinStates(dominoHistory.current.at(Object.keys(dominoHistory).length-1 - UndoRef.current + RedoRef.current));
-            setGrid(gridHistory.current.at(gridHistory.current.length - UndoRef.current + RedoRef.current));
+            HistoryRef.current -= 1;
+            setWinStates(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current));
+            setGrid(gridHistory.current.at(gridHistory.current.length - HistoryRef.current));
         }
     }
 

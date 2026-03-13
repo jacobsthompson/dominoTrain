@@ -55,11 +55,24 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
 
     useEffect(() => {
         if(initialState){
-            console.log("CHANGING", id);
             setPosition({x: initialState.x, y: initialState.y});
             setGridPosition({x: initialState.gridx, y: initialState.gridy});
             setRotation(initialState.rotation);
             setIsPlaced(initialState.isPlaced);
+            if(dominoRef.current){
+                dominoRef.current.style.left = `${initialState.x}px`;
+                dominoRef.current.style.top = `${initialState.y}px`;
+            }
+        } else {
+            setPosition({x: 0, y: 0});
+            setGridPosition({x: -1, y: -1});
+            setRotation(initialRotation);
+            setIsPlaced(false);
+
+            if(dominoRef.current){
+                dominoRef.current.style.left = '0px';
+                dominoRef.current.style.top = '0px';
+            }
         }
     }, [initialState]);
 

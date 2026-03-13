@@ -38,9 +38,15 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
 
     const dominoStates = useRef({});
 
+    useEffect(() => {
+        if(initialStates){
+            dominoStates.current = structuredClone(initialStates);
+        }
+    }, [initialStates]);
+
     const getDominoState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {
         dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation, isPlaced: isPlaced};
-        returnStates(dominoStates.current);
+        returnStates(structuredClone(dominoStates.current));
     }
 
     const getClearState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {
