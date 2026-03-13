@@ -10,10 +10,14 @@ export default function Header({howToPlayModal, statsModal, endlessMode}){
 
     const subtitle = endlessMode > 0 ? "Endless Mode" : months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
 
+    const openLink = () => {
+        window.open("www.jacobsthompson.com");
+    }
+
     return(
         <div className="header-container">
             <div className="header">
-                <div className="section left">
+                <div className="section left" onClick={openLink}>
                     <img src={moreIcon} className="header-icon left" alt="<-"/>
                     <div className="header-text left"  style={{cursor: 'pointer'}}>More Projects</div>
                 </div>
