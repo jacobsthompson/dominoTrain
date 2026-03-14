@@ -124,7 +124,7 @@ function DailyDominos() {
             setEndlessKey(prev => prev + 1);
             if(isWinModalOpen) openWinModal();
             soundGenerator.playClear();
-            ResetHistory(50);
+            ResetHistory(100);
         }
     }, [endlessMode]);
 
@@ -229,14 +229,15 @@ function DailyDominos() {
 
 
     function ResetHistory(time){
-        const timer = setTimeout(() => {
+        setTimeout(() => {
             dominoHistory.current = [dominoHistory.current.at(-1)];
             if(!blankGridState) setBlankGridState(structuredClone(dominoHistory.current.at(-1)));
             gridHistory.current = [gridHistory.current.at(-1)];
             HistoryRef.current = 1;
             setHistorySize(1);
+            // console.log("Reset");
+            // console.log(dominoHistory.current);
         }, time);
-        return () => clearTimeout(timer);
     }
 
     function sliceHistory(grid, type = "placement"){
@@ -309,7 +310,8 @@ function DailyDominos() {
         if(JSON.stringify(gridHistory.current.at(-1)) !== JSON.stringify(clearedGrid)){
             sliceHistory(clearedGrid, "clear");
         }
-        console.log(dominoHistory.current);
+        // console.log(dominoHistory.current);
+        // console.log(blankGridState);
         handleValidation();
         setClearBoard(prev => prev + 1);
         soundGenerator.playClear();
