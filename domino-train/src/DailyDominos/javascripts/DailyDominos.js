@@ -8,7 +8,7 @@ import DominoHolder from "./DominoHolder";
 import validateDominoPath from "./ValidateBoard";
 import generateDominoValues from "./GenerateSolution";
 import Timer from "./Timer";
-import {StartModal, StatsModal, TutorialModal, WinModal} from "./Modal";
+import {NewGameModal, StartModal, StatsModal, TutorialModal, WinModal} from "./Modal";
 import {soundGenerator} from "./SoundEffects";
 import statsIcon from '../assets/StatsIcon.svg';
 import howToIcon from '../assets/HowToIcon.svg';
@@ -37,6 +37,7 @@ function DailyDominos() {
     const [firstTutorial, setFirstTutorial] = useState(false);
     const [isWinModalOpen, setIsWinModalOpen] = useState(false);
     const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+    const [isNewGameModalOpen, setIsNewGameModalOpen] = useState(false);
 
     const [solutionFound, setSolutionFound] = useState(false);
     const solutionFoundRef = useRef(false);
@@ -364,6 +365,10 @@ function DailyDominos() {
         setIsStatsModalOpen(!isStatsModalOpen);
     }
 
+    const openNewGameModal = () => {
+        setIsNewGameModalOpen(!isNewGameModalOpen);
+    }
+
     const handleWon = () => {
         setAnimatedWon(true);
     }
@@ -461,7 +466,7 @@ function DailyDominos() {
                     }}>Undo</a>
                     <div>|</div>
                     {endlessMode > 0 && (
-                        <a className="sub-button" onClick={handleEndless}>New Game</a>
+                        <a className="sub-button" onClick={openNewGameModal}>New Game</a>
                     )}
                     {endlessMode > 0 && (
                         <div>|</div>
@@ -491,6 +496,11 @@ function DailyDominos() {
                 {isWinModalOpen && (
                     <div>
                         <WinModal endlessMode={endlessMode} handleEndlessMode={handleEndless} updateCallback={openWinModal}/>
+                    </div>
+                )}
+                {isNewGameModalOpen && (
+                    <div>
+                        <NewGameModal handleNewGame={handleEndless} updateCallback={openNewGameModal}/>
                     </div>
                 )}
             </div>

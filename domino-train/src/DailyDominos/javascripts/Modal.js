@@ -291,7 +291,7 @@ export function WinModal({endlessMode, handleEndlessMode, updateCallback}){
                 <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
                 <div className="modal-header">You Did It!</div>
                 <div className="modal-subtext">{subtitle}</div>
-                <div className="modal-text">You connected all the dominos in {stats.lastTime}!</div>
+                <div className="modal-text">You connected all the dominos in {statsBestTime(stats.lastTime)}!</div>
                 <div className="stats-container" style={{margin: '0.5rem 0 0 0'}}>
                     <div className="stat">
                         <div className="stat-number">{stats.wins ? stats.wins : 0}</div>
@@ -349,6 +349,26 @@ export function StatsModal({updateCallback}){
                 </div>
                 <div className="button-container">
                     <button className="button" onClick={updateCallback}>Back To Game</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function NewGameModal({updateCallback, handleNewGame}){
+    const newGame = () => {
+        handleNewGame();
+        updateCallback();
+    }
+
+    return (
+        <div className="modal">
+            <div className="modal-background" onClick={updateCallback}/>
+            <div className="modal-content" style={{height: '8rem', width: '16rem'}}>
+                <div className="modal-header">Start New Game?</div>
+                <div className="button-container" style={{flexDirection: 'row', gap: '0.5rem'}}>
+                    <button className="button" onClick={newGame}>New Game</button>
+                    <button className="cancel-button" onClick={updateCallback}>Cancel</button>
                 </div>
             </div>
         </div>
