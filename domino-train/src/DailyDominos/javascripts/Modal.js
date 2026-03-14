@@ -287,7 +287,7 @@ export function WinModal({endlessMode, handleEndlessMode, updateCallback}){
     return (
         <div className="modal">
             <div className="modal-background" onClick={updateCallback}/>
-            <div className="modal-content">
+            <div className="modal-content" style={{height: '21rem'}}>
                 <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
                 <div className="modal-header">You Did It!</div>
                 <div className="modal-subtext">{subtitle}</div>
