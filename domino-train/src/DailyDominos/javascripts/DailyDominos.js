@@ -7,6 +7,7 @@ import DominoPips from "./DominoPips";
 import DominoHolder from "./DominoHolder";
 import validateDominoPath from "./ValidateBoard";
 import generateDominoValues from "./GenerateSolution";
+import Timer from "./Timer";
 import {StartModal, StatsModal, TutorialModal, WinModal} from "./Modal";
 import {soundGenerator} from "./SoundEffects";
 import statsIcon from '../assets/StatsIcon.svg';
@@ -14,41 +15,6 @@ import howToIcon from '../assets/HowToIcon.svg';
 import moreIcon from '../assets/MoreIcon.svg'
 import icon from '../assets/DominoTrainIcon.svg';
 import '../stylesheets/dailydominos.css';
-
-function Timer(){
-    const [elapsedTime, setElapsedTime] = useState(0);
-    const startTimeRef = useRef(null);
-    const tickRef = useRef(null);
-
-    const tick = useCallback(() => {
-        setElapsedTime(Date.now() - startTimeRef.current);
-        tickRef.current = requestAnimationFrame(tick);
-    }, []);
-
-    const startTimer = useCallback(() => {
-        startTimeRef.current = Date.now();
-        tickRef.current = requestAnimationFrame(tick);
-    }, [tick]);
-
-    const stopTimer = useCallback(() => {
-        cancelAnimationFrame(tickRef.current);
-        tickRef.current = null;
-    }, [])
-
-    const resetTimer = () => {
-        setElapsedTime(0);
-    }
-
-    const getTime = useCallback(() => {
-        const seconds = Math.floor(elapsedTime/1000);
-        const minutes = Math.floor((seconds % 3600)/60);
-        const hours = Math.floor(minutes/60);
-        const pad = (n) => String(n).padStart(2, '0');
-        return hours > 0 ? `${pad(hours)}:${pad(minutes)}:${pad(seconds % 60)}` : `${pad(minutes)}:${pad(seconds % 60)}`
-    }, [elapsedTime])
-
-    return { startTimer, stopTimer, resetTimer, getTime}
-}
 
 function DailyDominos() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -94,7 +60,7 @@ function DailyDominos() {
 
     const svgs = [statsIcon, howToIcon, moreIcon, icon];
 
-    const {startTimer, stopTimer, resetTimer, getTime} = Timer();
+    const {startTimer, stopTimer, resetTimer, getTime, bestTimeCompare} = Timer();
     const finalTime = useRef('');
 
     function preloadImages(srcs) {
@@ -216,7 +182,8 @@ function DailyDominos() {
                     lastWinDate: stats.lastWinDate,
                     currWinStates: stats.currWinStates,
                     currWinBoard: stats.currWinBoard,
-                    lastTime: stats.lastTime
+                    lastTime: stats.lastTime,
+                    bestTime: stats.bestTime
                 };
 
                 localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
@@ -234,7 +201,8 @@ function DailyDominos() {
             lastWinDate: null,
             currWinStates: null,
             currWinBoard: null,
-            lastTime: null
+            lastTime: null,
+            bestTime: null
         };
 
         if(stats.lastWinDate === today) return;
@@ -252,7 +220,8 @@ function DailyDominos() {
             lastWinDate: today,
             currWinStates: dominoStates,
             currWinBoard: grid,
-            lastTime: finalTime.current
+            lastTime: finalTime.current,
+            bestTime: bestTimeCompare(finalTime.current, stats.bestTime)
         };
 
         localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
@@ -363,7 +332,7 @@ function DailyDominos() {
     }
 
     const handleResize = () => {
-        if(window.innerWidth < 450){
+        if(window.innerWidth < 430){
             SET_CELL_SIZE(35);
         } else if(window.innerWidth < 500){
             SET_CELL_SIZE(40);
@@ -375,7 +344,7 @@ function DailyDominos() {
     const openStartModal = () => {
         setIsStartModalOpen(!isStartModalOpen);
         ResetHistory(0);
-        startTimer();
+        if(isStartModalOpen) startTimer();
     }
 
     const openTutorialModal = () => {
@@ -506,7 +475,7 @@ function DailyDominos() {
                 </div>
                 {isStartModalOpen && (
                     <div>
-                    <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isStartModalOpen} updateCallback={openStartModal}/>
+                    <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} updateCallback={openStartModal}/>
                     </div>
                 )}
                 {isTutorialModalOpen && (
@@ -516,12 +485,12 @@ function DailyDominos() {
                 )}
                 {isStatsModalOpen && (
                     <div>
-                        <StatsModal isModalOpen={isStatsModalOpen} updateCallback={openStatsModal}/>
+                        <StatsModal updateCallback={openStatsModal}/>
                     </div>
                 )}
                 {isWinModalOpen && (
                     <div>
-                        <WinModal endlessMode={endlessMode} isModalOpen={isWinModalOpen} handleEndlessMode={handleEndless} updateCallback={openWinModal} finalTime={finalTime.current}/>
+                        <WinModal endlessMode={endlessMode} handleEndlessMode={handleEndless} updateCallback={openWinModal}/>
                     </div>
                 )}
             </div>

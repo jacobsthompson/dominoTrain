@@ -82,9 +82,10 @@ a:hover {
 .stats-container {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     margin: 1rem 0 0 0;
     justify-content: space-evenly;
+    white-space: nowrap;
 }
 
 .stat-number {
@@ -93,7 +94,7 @@ a:hover {
 }
 
 .stat-label {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: normal;
     margin: 0.4rem;
 }

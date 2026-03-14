@@ -10,7 +10,25 @@ import arrowIcon from "../assets/MoreIcon.svg";
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const date = new Date();
 
-export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallback}){
+function statsBestTime(time){
+    if(time.length > 5){
+        if (time[0] === '0') { return time.slice(1,time.length); }
+        else { return time }
+    }
+    if(time.slice(0,2) === '00') {
+        if(time[4] === 0){
+            return time[time.length] + 's';
+        } else {
+            return time.slice(3,5) + 's';
+        }
+    } else if(time[0] === '0'){
+        return time.slice(1,time.length);
+    } else {
+        return time;
+    }
+}
+
+export function StartModal({CELL_SIZE, amountOfTiles, updateCallback}){
     const [isTutorialModalOpen, setIsTutorialModalOpen] = useState(false);
 
     const openTutorialModal = () => {
@@ -37,43 +55,6 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
                     <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={amountOfTiles} isModalOpen={isTutorialModalOpen} updateCallback={updateCallback}/>
                 </div>
             )}
-        </div>
-    );
-}
-
-
-export function WinModal({endlessMode, isModalOpen, handleEndlessMode, updateCallback, finalTime}){
-    const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
-    const subtitle = endlessMode > 0 ? "Endless Mode" : months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
-
-    return (
-        <div className="modal">
-            <div className="modal-background" onClick={updateCallback}/>
-            <div className="modal-content">
-                <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
-                <div className="modal-header">You Did It!</div>
-                <div className="modal-subtext">{subtitle}</div>
-                <div className="modal-text">You connected all the dominos in {stats.lastTime}!</div>
-                <div className="stats-container" style={{margin: '0.5rem 0 0 0'}}>
-                    <div className="stat">
-                        <div className="stat-number">{stats.wins ? stats.wins : 0}</div>
-                        <div className="stat-label">Solves</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-number">{stats.streak ? stats.streak : 0}</div>
-                        <div className="stat-label">Day Streak</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-number">{stats.maxStreak ? stats.maxStreak : 0}</div>
-                        <div className="stat-label">Max Streak</div>
-                    </div>
-                </div>
-                {/*<div className="grid">{createGridText()}</div>*/}
-                <div className="button-container">
-                    <button className="button" onClick={handleEndlessMode}>Play Endless</button>
-                    <a className="modal-sub-button" onClick={updateCallback}>Back To Board</a>
-                </div>
-            </div>
         </div>
     );
 }
@@ -245,7 +226,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                             <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', alignItems: 'center', whiteSpace: 'nowrap'}}>
                                 Try Me!
                                 <img src={arrowIcon}
-                                     style={{filter: 'invert(1)', transform: 'scale(0.4) scaleX(-1)', margin: '0'}}
+                                     style={{filter: 'invert(1)', height: '1.5rem', transform: 'scaleX(-1)', marginLeft: '0.75rem'}}
                                      alt="->"/>
                             </div>
                             <div className="tutorial-domino-holder" style={{width: cellSize * 3, height: cellSize * 3}}>
@@ -274,7 +255,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                             </div>
                             <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', alignItems: 'center', whiteSpace: 'nowrap'}}>
                                 <img src={arrowIcon}
-                                     style={{filter: 'invert(1)', transform: 'scale(0.4)', margin: '0'}}
+                                     style={{filter: 'invert(1)', height: '1.5rem', marginLeft: '0.75rem'}}
                                      alt="<-"/>
                                 Try Me!
                             </div>
@@ -299,7 +280,46 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
     );
 }
 
-export function StatsModal({isModalOpen, updateCallback}){
+export function WinModal({endlessMode, handleEndlessMode, updateCallback}){
+    const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+    const subtitle = endlessMode > 0 ? "Endless Mode" : months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+
+    return (
+        <div className="modal">
+            <div className="modal-background" onClick={updateCallback}/>
+            <div className="modal-content">
+                <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
+                <div className="modal-header">You Did It!</div>
+                <div className="modal-subtext">{subtitle}</div>
+                <div className="modal-text">You connected all the dominos in {stats.lastTime}!</div>
+                <div className="stats-container" style={{margin: '0.5rem 0 0 0'}}>
+                    <div className="stat">
+                        <div className="stat-number">{stats.wins ? stats.wins : 0}</div>
+                        <div className="stat-label">Solves</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">{stats.streak ? stats.streak : 0}</div>
+                        <div className="stat-label">Day Streak</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">{stats.maxStreak ? stats.maxStreak : 0}</div>
+                        <div className="stat-label">Max Streak</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">{(stats && stats.bestTime) ? statsBestTime(stats.bestTime) : "N/A"}</div>
+                        <div className="stat-label">Best Time</div>
+                    </div>
+                </div>
+                <div className="button-container">
+                    <button className="button" onClick={handleEndlessMode}>Play Endless</button>
+                    <a className="modal-sub-button" onClick={updateCallback}>Back To Board</a>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function StatsModal({updateCallback}){
     const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
 
     return (
@@ -321,6 +341,10 @@ export function StatsModal({isModalOpen, updateCallback}){
                     <div className="stat">
                         <div className="stat-number">{(stats && stats.maxStreak) ? stats.maxStreak : 0}</div>
                         <div className="stat-label">Max Streak</div>
+                    </div>
+                    <div className="stat">
+                        <div className="stat-number">{(stats && stats.bestTime) ? statsBestTime(stats.bestTime) : "N/A"}</div>
+                        <div className="stat-label">Best Time</div>
                     </div>
                 </div>
                 <div className="button-container">
