@@ -224,7 +224,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                             <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={2} value2={3} rotation={0}/>
                             <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={2} value2={4} rotation={270}/>
                         </div>
-                        <div className="tutorial-text">Dominos cannot connected in parallel.</div>
+                        <div className="tutorial-text">Dominos cannot be connected in parallel.</div>
                         <div className="example-area">
                             <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={1} value2={2} rotation={270}
                                         topTile={true}/>
