@@ -231,7 +231,7 @@ function DailyDominos() {
     function ResetHistory(time){
         const timer = setTimeout(() => {
             dominoHistory.current = [dominoHistory.current.at(-1)];
-            if(!blankGridState) setBlankGridState({...dominoHistory.current.at(-1)});
+            if(!blankGridState) setBlankGridState(structuredClone(dominoHistory.current.at(-1)));
             gridHistory.current = [gridHistory.current.at(-1)];
             HistoryRef.current = 1;
             setHistorySize(1);
@@ -309,6 +309,7 @@ function DailyDominos() {
         if(JSON.stringify(gridHistory.current.at(-1)) !== JSON.stringify(clearedGrid)){
             sliceHistory(clearedGrid, "clear");
         }
+        console.log(dominoHistory.current);
         handleValidation();
         setClearBoard(prev => prev + 1);
         soundGenerator.playClear();
