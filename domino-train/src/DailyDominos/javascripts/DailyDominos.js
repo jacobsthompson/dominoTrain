@@ -318,7 +318,9 @@ function DailyDominos() {
     }
 
     const handleResize = () => {
-        if(window.innerWidth < 500){
+        if(window.innerWidth < 450){
+            SET_CELL_SIZE(35);
+        } else if(window.innerWidth < 500){
             SET_CELL_SIZE(40);
         } else {
             SET_CELL_SIZE(50);
