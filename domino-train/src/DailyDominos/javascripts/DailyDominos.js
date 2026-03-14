@@ -54,6 +54,7 @@ function DailyDominos() {
     const gridHistory = useRef([grid]);
     const HistoryRef = useRef(1);
     const [historySize, setHistorySize] = useState(1);
+    const [blankGridState, setBlankGridState] = useState(null);
 
     const [skipAnimation, setSkipAnimation] = useState(false);
 
@@ -230,6 +231,7 @@ function DailyDominos() {
     function ResetHistory(time){
         const timer = setTimeout(() => {
             dominoHistory.current = [dominoHistory.current.at(-1)];
+            if(!blankGridState) setBlankGridState({...dominoHistory.current.at(-1)});
             gridHistory.current = [gridHistory.current.at(-1)];
             HistoryRef.current = 1;
             setHistorySize(1);
@@ -245,7 +247,7 @@ function DailyDominos() {
         setHistorySize(gridHistory.current.length);
 
         if(type === "clear") {
-            dominoHistory.current.push({...dominoHistory.current.at(0)});
+            dominoHistory.current.push(blankGridState);
         }
 
         setWinStates(dominoHistory.current.at(-1));
