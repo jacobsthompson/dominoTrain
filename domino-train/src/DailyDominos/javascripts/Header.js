@@ -4,7 +4,7 @@ import howToIcon from "../assets/HowToIcon.svg";
 import moreIcon from "../assets/MoreIcon.svg";
 import '../stylesheets/header.css'
 
-export default function Header({howToPlayModal, statsModal, endlessMode}){
+export default function Header({howToPlayModal, statsModal, endlessMode, time}){
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const date = new Date();
 
@@ -23,7 +23,7 @@ export default function Header({howToPlayModal, statsModal, endlessMode}){
                 </div>
                 <div className="section center">
                     <div className="header-text title">Daily Dominos</div>
-                    <div className="modal-subtext">{subtitle}</div>
+                    <div className="modal-subtext">{time}</div>
                 </div>
                 <div className="section right">
                     <img src={howToIcon} className="header-icon right" onClick={howToPlayModal} alt="?"/>

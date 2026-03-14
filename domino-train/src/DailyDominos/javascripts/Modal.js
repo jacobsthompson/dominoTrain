@@ -5,6 +5,7 @@ import FakeDomino from "./FakeDomino";
 import icon from "../assets/DominoTrainIcon.svg";
 import '../stylesheets/modal.css'
 import '../stylesheets/tutorialmodal.css'
+import arrowIcon from "../assets/MoreIcon.svg";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const date = new Date();
@@ -41,23 +42,8 @@ export function StartModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCallbac
 }
 
 
-export function WinModal({endlessMode, isModalOpen, handleEndlessMode, updateCallback}){
+export function WinModal({endlessMode, isModalOpen, handleEndlessMode, updateCallback, finalTime}){
     const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
-    // const createGridText = () => {
-    //     return finalGrid.map((row, y) => (
-    //     <div key={y} style={{ display: 'flex' }}>
-    //         {row.map((cell, x) => (
-    //             <span
-    //                 key={x}
-    //                 style={{ color: cell === null ? 'black' : '#4CAF50' }}
-    //             >
-    //                 ■
-    //             </span>
-    //         ))}
-    //     </div>
-    //     ));
-    // };
-
     const subtitle = endlessMode > 0 ? "Endless Mode" : months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
 
     return (
@@ -67,8 +53,8 @@ export function WinModal({endlessMode, isModalOpen, handleEndlessMode, updateCal
                 <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
                 <div className="modal-header">You Did It!</div>
                 <div className="modal-subtext">{subtitle}</div>
-                <div className="modal-text">You connected all the dominos!</div>
-                <div className="stats-container">
+                <div className="modal-text">You connected all the dominos in {stats.lastTime}!</div>
+                <div className="stats-container" style={{margin: '0.5rem 0 0 0'}}>
                     <div className="stat">
                         <div className="stat-number">{stats.wins ? stats.wins : 0}</div>
                         <div className="stat-label">Solves</div>
@@ -231,12 +217,12 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                             <FakeDomino CELL_SIZE={50} color={'#D44444'} value1={3} value2={3} rotation={270}
                                         topTile={true}/>
                         </div>
-                        <div className="example-area">
+                        <div className="example-area" style={{marginBottom: '0.5rem'}}>
                             <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={1} value2={2} rotation={270}/>
                             <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={2} value2={3} rotation={270}/>
                             <FakeDomino CELL_SIZE={50} color={'#4CAF50'} value1={3} value2={4} rotation={270}/>
                         </div>
-                        <div className="tutorial-header">Controls</div>
+                        <div className="tutorial-header" style={{fontSize: '1.2rem'}}>----- Controls -----</div>
                         <div className="tutorial-text-container">
                             <div ref={downText} className="tutorial-text"
                                  style={{color: firstMouseDown ? "#4CAF50" : "#f8f8ff"}}>
@@ -255,28 +241,42 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                                 Release over Grid to Place.
                             </div>
                         </div>
-                        <div className="tutorial-domino-holder" style={{width: cellSize * 3, height: cellSize * 3}}>
-                            <div className="tutorial-domino-container" style={{
-                                width: isVertical ? cellSize : cellSize * 2,
-                                height: isVertical ? cellSize * 2 : cellSize
-                            }}>
-                                <div className="tutorial-domino-wrapper"
-                                     style={{
-                                         position: 'relative',
-                                         width: cellSize * 2,
-                                         height: cellSize,
-                                         touchAction: 'none'
-                                     }}>
-                                    <TutorialDomino
-                                        CELL_SIZE={cellSize}
-                                        onRotation={handleRotation}
-                                        onFirstDown={handleFirstDown}
-                                        onFirstMove={handleFirstMove}
-                                        onFirstUp={handleFirstUp}
-                                        onFirstRotate={handleFirstRotate}
-                                        validPlace={firstMouseUp}
-                                    />
+                        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', alignItems: 'center', whiteSpace: 'nowrap'}}>
+                                Try Me!
+                                <img src={arrowIcon}
+                                     style={{filter: 'invert(1)', transform: 'scale(0.4) scaleX(-1)', margin: '0'}}
+                                     alt="->"/>
+                            </div>
+                            <div className="tutorial-domino-holder" style={{width: cellSize * 3, height: cellSize * 3}}>
+                                <div className="tutorial-domino-container" style={{
+                                    width: isVertical ? cellSize : cellSize * 2,
+                                    height: isVertical ? cellSize * 2 : cellSize
+                                }}>
+                                    <div className="tutorial-domino-wrapper"
+                                         style={{
+                                             position: 'relative',
+                                             width: cellSize * 2,
+                                             height: cellSize,
+                                             touchAction: 'none'
+                                         }}>
+                                        <TutorialDomino
+                                            CELL_SIZE={cellSize}
+                                            onRotation={handleRotation}
+                                            onFirstDown={handleFirstDown}
+                                            onFirstMove={handleFirstMove}
+                                            onFirstUp={handleFirstUp}
+                                            onFirstRotate={handleFirstRotate}
+                                            validPlace={firstMouseUp}
+                                        />
+                                    </div>
                                 </div>
+                            </div>
+                            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', alignItems: 'center', whiteSpace: 'nowrap'}}>
+                                <img src={arrowIcon}
+                                     style={{filter: 'invert(1)', transform: 'scale(0.4)', margin: '0'}}
+                                     alt="<-"/>
+                                Try Me!
                             </div>
                         </div>
                     </div>
@@ -305,7 +305,7 @@ export function StatsModal({isModalOpen, updateCallback}){
     return (
         <div className="modal">
             <div className="modal-background" onClick={updateCallback}/>
-            <div className="modal-content">
+            <div className="modal-content" style={{height: '20rem'}}>
                 <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
                 <div className="modal-header">Game Statistics</div>
                 <div className="modal-text">See how well you're doing!</div>

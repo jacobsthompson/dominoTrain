@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {GRID_HEIGHT, GRID_WIDTH} from "./Constants";
 import Header from "./Header";
 import Board from "./Board"
@@ -15,6 +15,40 @@ import moreIcon from '../assets/MoreIcon.svg'
 import icon from '../assets/DominoTrainIcon.svg';
 import '../stylesheets/dailydominos.css';
 
+function Timer(){
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const startTimeRef = useRef(null);
+    const tickRef = useRef(null);
+
+    const tick = useCallback(() => {
+        setElapsedTime(Date.now() - startTimeRef.current);
+        tickRef.current = requestAnimationFrame(tick);
+    }, []);
+
+    const startTimer = useCallback(() => {
+        startTimeRef.current = Date.now();
+        tickRef.current = requestAnimationFrame(tick);
+    }, [tick]);
+
+    const stopTimer = useCallback(() => {
+        cancelAnimationFrame(tickRef.current);
+        tickRef.current = null;
+    }, [])
+
+    const resetTimer = () => {
+        setElapsedTime(0);
+    }
+
+    const getTime = useCallback(() => {
+        const seconds = Math.floor(elapsedTime/1000);
+        const minutes = Math.floor((seconds % 3600)/60);
+        const hours = Math.floor(minutes/60);
+        const pad = (n) => String(n).padStart(2, '0');
+        return hours > 0 ? `${pad(hours)}:${pad(minutes)}:${pad(seconds % 60)}` : `${pad(minutes)}:${pad(seconds % 60)}`
+    }, [elapsedTime])
+
+    return { startTimer, stopTimer, resetTimer, getTime}
+}
 
 function DailyDominos() {
     const [startingTile, setStartingTile] = useState({dominoId: "start", x: 0, y:Math.floor(GRID_HEIGHT/2),  value: Math.floor(Math.random() * 6) + 1});
@@ -59,6 +93,9 @@ function DailyDominos() {
     const [skipAnimation, setSkipAnimation] = useState(false);
 
     const svgs = [statsIcon, howToIcon, moreIcon, icon];
+
+    const {startTimer, stopTimer, resetTimer, getTime} = Timer();
+    const finalTime = useRef('');
 
     function preloadImages(srcs) {
       return Promise.all(srcs.map(src => new Promise((resolve) => {
@@ -125,6 +162,8 @@ function DailyDominos() {
             if(isWinModalOpen) openWinModal();
             soundGenerator.playClear();
             ResetHistory(100);
+            resetTimer();
+            startTimer();
         }
     }, [endlessMode]);
 
@@ -138,6 +177,9 @@ function DailyDominos() {
         if(score === startingDominoCount && solutionFound && animatedWon){
             if(!gameWon){
                 setGameWon(true);
+                stopTimer();
+                finalTime.current = getTime();
+                console.log(finalTime.current);
                 saveStats();
             }
             if(!isWinModalOpen) openWinModal();
@@ -173,7 +215,8 @@ function DailyDominos() {
                     maxStreak: stats.maxStreak,
                     lastWinDate: stats.lastWinDate,
                     currWinStates: stats.currWinStates,
-                    currWinBoard: stats.currWinBoard
+                    currWinBoard: stats.currWinBoard,
+                    lastTime: stats.lastTime
                 };
 
                 localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
@@ -190,7 +233,8 @@ function DailyDominos() {
             maxStreak: 0,
             lastWinDate: null,
             currWinStates: null,
-            currWinBoard: null
+            currWinBoard: null,
+            lastTime: null
         };
 
         if(stats.lastWinDate === today) return;
@@ -207,7 +251,8 @@ function DailyDominos() {
             maxStreak: Math.max(newStreak, stats.maxStreak),
             lastWinDate: today,
             currWinStates: dominoStates,
-            currWinBoard: grid
+            currWinBoard: grid,
+            lastTime: finalTime.current
         };
 
         localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
@@ -330,12 +375,14 @@ function DailyDominos() {
     const openStartModal = () => {
         setIsStartModalOpen(!isStartModalOpen);
         ResetHistory(0);
+        startTimer();
     }
 
     const openTutorialModal = () => {
         setIsTutorialModalOpen(!isTutorialModalOpen);
         if(firstTutorial) {
             ResetHistory(0);
+            startTimer();
             setFirstTutorial(false);
         }
     }
@@ -396,7 +443,7 @@ function DailyDominos() {
 
     return (
         <div className="window">
-            <Header howToPlayModal={openTutorialModal} statsModal={openStatsModal} endlessMode={endlessMode}/>
+            <Header howToPlayModal={openTutorialModal} statsModal={openStatsModal} endlessMode={endlessMode} time={getTime()}/>
             <div className="domino-train">
                 <Scoreboard CELL_SIZE={CELL_SIZE} score={score} topScore={startingDominoCount} side={"top"} solutionFound={solutionFound} handleWon={handleWon} skipAnimation={skipAnimation}/>
                 <div className="grid" style={{boxShadow: (score === startingDominoCount && solutionFound) ? '0 0 2rem #4CAF50' : 'none'}}>
@@ -474,7 +521,7 @@ function DailyDominos() {
                 )}
                 {isWinModalOpen && (
                     <div>
-                        <WinModal endlessMode={endlessMode} isModalOpen={isWinModalOpen} handleEndlessMode={handleEndless} updateCallback={openWinModal}/>
+                        <WinModal endlessMode={endlessMode} isModalOpen={isWinModalOpen} handleEndlessMode={handleEndless} updateCallback={openWinModal} finalTime={finalTime.current}/>
                     </div>
                 )}
             </div>
