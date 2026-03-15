@@ -142,11 +142,10 @@ function DailyDominos() {
     //On Daily Win (First Time)
     useEffect(() => {
         if(score === startingDominoCount && solutionFound && animatedWon){
+            stopTimer();
+            finalTime.current = getTime();
             if(!gameWon){
                 setGameWon(true);
-                stopTimer();
-                finalTime.current = getTime();
-                console.log(finalTime.current);
                 saveStats();
             }
             if(!isWinModalOpen) openWinModal();
@@ -495,7 +494,7 @@ function DailyDominos() {
                 )}
                 {isWinModalOpen && (
                     <div>
-                        <WinModal endlessMode={endlessMode} handleEndlessMode={handleEndless} updateCallback={openWinModal}/>
+                        <WinModal endlessMode={endlessMode} handleEndlessMode={handleEndless} updateCallback={openWinModal} finalTime={finalTime}/>
                     </div>
                 )}
                 {isNewGameModalOpen && (

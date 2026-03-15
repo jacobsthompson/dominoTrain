@@ -280,7 +280,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
     );
 }
 
-export function WinModal({endlessMode, handleEndlessMode, updateCallback}){
+export function WinModal({endlessMode, handleEndlessMode, updateCallback, finalTime}){
     const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
     const subtitle = endlessMode > 0 ? "Endless Mode" : months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
 
@@ -291,7 +291,7 @@ export function WinModal({endlessMode, handleEndlessMode, updateCallback}){
                 <img src={icon} className="modal-icon" alt="[0/0]" width="75"/>
                 <div className="modal-header">You Did It!</div>
                 <div className="modal-subtext">{subtitle}</div>
-                <div className="modal-text">You connected all the dominos in {statsBestTime(stats.lastTime)}!</div>
+                <div className="modal-text">You connected all the dominos in {endlessMode ? statsBestTime(finalTime.current) : statsBestTime(stats.lastTime)}!</div>
                 <div className="stats-container" style={{margin: '0.5rem 0 0 0'}}>
                     <div className="stat">
                         <div className="stat-number">{stats.wins ? stats.wins : 0}</div>
