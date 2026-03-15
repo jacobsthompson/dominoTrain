@@ -141,14 +141,16 @@ function DailyDominos() {
 
     //On Daily Win (First Time)
     useEffect(() => {
-        if(score === startingDominoCount && solutionFound && animatedWon){
+        if(score === startingDominoCount && solutionFound){
             stopTimer();
             finalTime.current = getTime();
-            if(!gameWon){
-                setGameWon(true);
-                saveStats();
+            if(animatedWon){
+                if(!gameWon){
+                    setGameWon(true);
+                    saveStats();
+                }
+                if(!isWinModalOpen) openWinModal();
             }
-            if(!isWinModalOpen) openWinModal();
         }
     }, [score, solutionFound, animatedWon]);
 
