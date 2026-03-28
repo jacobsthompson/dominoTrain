@@ -6,6 +6,7 @@ import icon from "../assets/DominoTrainIcon.svg";
 import '../stylesheets/modal.css'
 import '../stylesheets/tutorialmodal.css'
 import arrowIcon from "../assets/MoreIcon.svg";
+import {JTWatermark} from "../../Watermark";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const date = new Date();
@@ -269,6 +270,7 @@ export function TutorialModal({CELL_SIZE, amountOfTiles, isModalOpen, updateCall
                             <button className="button" onClick={updateCallback}>Back To Game</button>
                         )}
                     </div>
+                    <JTWatermark/>
                 </div>
             )}
             {isStartModalOpen && (
