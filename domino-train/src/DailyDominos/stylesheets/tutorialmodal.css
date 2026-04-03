@@ -1,5 +1,4 @@
 .tutorial-content {
-    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -12,6 +11,7 @@
     width: 20rem;
     height: 40rem;
     z-index: 100;
+
 }
 
 
@@ -74,4 +74,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media screen and (max-width: 420px){
+    .tutorial-content {
+        scale: 0.8;
+    }
 }

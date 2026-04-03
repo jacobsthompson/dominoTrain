@@ -10,16 +10,22 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100vh;
-    overflow: hidden;
 }
 
 #root {
+    position: relative;
     width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
-    /*align-items: center;*/
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.window {
+    position: relative;
+    width: 100vw;
+    height: fit-content;
 }
 
 .loading {
@@ -30,21 +36,17 @@ html, body {
     align-items: center;
 }
 
-.window {
-    width: 100vw;
-    height: 100vh;
-}
-
 .domino-train {
     width: max-content;
     max-width: 100vw;
-    max-height: 100vh;
+    min-height: 100%;
 
     display: flex;
     flex-direction: column;
     align-items: center;
     box-sizing: border-box;
 
+    padding-bottom: 20px;
     /*padding: 20px;*/
     margin: auto;
 

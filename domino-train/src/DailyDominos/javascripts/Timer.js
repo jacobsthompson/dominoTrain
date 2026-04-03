@@ -1,70 +1,106 @@
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useRef, useState, useEffect} from "react";
 
 export default function Timer(){
-    const [elapsedTime, setElapsedTime] = useState(0);
+    const elapsedTime = useRef(0);
     const startTimeRef = useRef(null);
+
+    const lastTimestamp = useRef(null);
+    const isRunning = useRef(false);
     const tickRef = useRef(null);
 
-    const tick = useCallback(() => {
-        setElapsedTime(Date.now() - startTimeRef.current);
+    const [,Updater] = useState(0);
+
+    const setTime = useCallback((time) => {
+        elapsedTime.current = time;
+    }, []);
+
+    const tick = useCallback((timestamp) => {
+        if(lastTimestamp.current !== null){
+            elapsedTime.current += timestamp - lastTimestamp.current;
+        }
+
+        lastTimestamp.current = timestamp;
+        Updater(n => n + 1);
         tickRef.current = requestAnimationFrame(tick);
     }, []);
 
     const startTimer = useCallback(() => {
-        startTimeRef.current = Date.now();
+        lastTimestamp.current = null;
+        isRunning.current = true;
         tickRef.current = requestAnimationFrame(tick);
     }, [tick]);
 
     const stopTimer = useCallback(() => {
+        isRunning.current = false;
         cancelAnimationFrame(tickRef.current);
         tickRef.current = null;
+        lastTimestamp.current = null;
     }, [])
 
-    const resetTimer = () => {
-        setElapsedTime(0);
-    }
+    const pauseTimer = useCallback(() => {
+        if (!isRunning.current) return;
+        cancelAnimationFrame(tickRef.current);
+        tickRef.current = null;
+        lastTimestamp.current = null;
+    }, []);
+
+
+    const resumeTimer = useCallback(() => {
+        if (!isRunning.current || tickRef.current) return;
+        lastTimestamp.current = null;
+        tickRef.current = requestAnimationFrame(tick);
+    }, [tick]);
+
+    const toggleMenuTimer = useCallback(() => {
+        if (tickRef.current) {
+            pauseTimer();
+        } else {
+            resumeTimer();
+        }
+    }, [pauseTimer, resumeTimer]);
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                pauseTimer();
+            } else {
+                resumeTimer();
+            }
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, [pauseTimer, resumeTimer]);
+
+    const resetTimer = useCallback(() => {
+        elapsedTime.current = 0;
+        lastTimestamp.current = null;
+        Updater(0);
+    }, []);
 
     const getTime = useCallback(() => {
-        const seconds = Math.floor(elapsedTime/1000);
+        const seconds = Math.floor(elapsedTime.current/1000);
         const minutes = Math.floor((seconds % 3600)/60);
         const hours = Math.floor(minutes/60);
         const pad = (n) => String(n).padStart(2, '0');
         return hours > 0 ? `${pad(hours)}:${pad(minutes)}:${pad(seconds % 60)}` : `${pad(minutes)}:${pad(seconds % 60)}`
-    }, [elapsedTime])
+    }, []);
 
-    const bestTimeCompare = (time1, time2) => {
-        if(!time1) return time2;
-        if(!time2) return time1;
+    const getRawTime = useCallback(() => {
+        return elapsedTime.current;
+    }, []);
 
-        const time1s = parseInt(time1.slice(-2,time1.length), 10);
-        const time2s = parseInt(time2.slice(-2,time2.length), 10);
-        const time1m = parseInt(time1.slice(-5,-3), 10);
-        const time2m = parseInt(time2.slice(-5,-3), 10);
-        let time1h = parseInt('00', 10);
-        let time2h = parseInt('00', 10);
-        if(time1.length > 5) { time1h = parseInt(time1.slice(0,2), 10); }
-        if(time2.length > 5) { time2h = parseInt(time2.slice(0,2), 10); }
+    const bestTimeCompare = useCallback((time1, time2) => {
+        if (!time1) return time2;
+        if (!time2) return time1;
 
-        if(time1h > time2h){
-            // console.log("1", time1h, time2h, time1m, time2m, time1s, time2s);
-            return time2;
-        } else if(time1h < time2h){
-            // console.log("2", time1h, time2h, time1m, time2m, time1s, time2s);
-            return time1;
-        } else if(time1m > time2m){
-            // console.log("3", time1h, time2h, time1m, time2m, time1s, time2s);
-            return time2;
-        } else if(time1m < time2m){
-            // console.log("4", time1h, time2h, time1m, time2m, time1s, time2s);
-            return time1;
-        } else if(time1s > time2s){
-            // console.log("5", time1h, time2h, time1m, time2m, time1s, time2s);
-            return time2;
-        } else {
-            // console.log("6", time1h, time2h, time1m, time2m, time1s, time2s);
-            return time1;
-        }
-    }
+        const parse = (t) => {
+            const parts = t.split(":").map(Number);
+            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+            return parts[0] * 60 + parts[1];
+        };
 
-    return { startTimer, stopTimer, resetTimer, getTime, bestTimeCompare}
+        return parse(time1) <= parse(time2) ? time1 : time2;
+    }, []);
+
+    return { startTimer, stopTimer, resetTimer, getTime, bestTimeCompare, toggleMenuTimer, getRawTime, setTime}
 }

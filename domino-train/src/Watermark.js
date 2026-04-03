@@ -37,7 +37,7 @@ export function JTWatermark(){
                     {`
                     @font-face {
                         font-family: "Karrik";
-                        src: local("Karrik-Regular"), url("https://res.cloudinary.com/dwrjdndw4/image/upload/assets/Karrik-Regular.ttf") format("woff2");
+                        src: local("Karrik-Regular"), url("https://res.cloudinary.com/dwrjdndw4/raw/upload/v1774676949/assets/Karrik-Regular.ttf") format("woff2");
                      }
                     
                     .watermark-text {

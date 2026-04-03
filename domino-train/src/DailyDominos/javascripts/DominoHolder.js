@@ -18,6 +18,8 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
        return onPlacement(dominoId, cells);
     };
 
+    const [gameStarted, setGameStarted] = useState(false);
+
     const handlePickup = (dominoId) => {
         onRemoval(dominoId);
     };
@@ -26,6 +28,9 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
         if(currentlyDraggingId.current !== null && currentlyDraggingId.current !== dominoId){
             return false;
         }
+
+        if(!gameStarted) setGameStarted(true);
+        console.log("Game Started!");
         currentlyDraggingId.current = dominoId;
         return true;
     };
@@ -46,7 +51,10 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
 
     const getDominoState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {
         dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation, isPlaced: isPlaced};
-        returnStates(structuredClone(dominoStates.current));
+        if(gameStarted){
+            console.log("Returning");
+            returnStates(structuredClone(dominoStates.current));
+        }
     }
 
     const getClearState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {

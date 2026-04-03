@@ -157,7 +157,10 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
                         const currentAngle = getTouchAngle(e.touches[0], e.touches[1]);
 
                         if(lastRotationAngle.current !== null){
-                            const angleDiff = currentAngle - lastRotationAngle.current;
+                            let angleDiff = currentAngle - lastRotationAngle.current;
+
+                            if(angleDiff > 180) angleDiff -= 360;
+                            if(angleDiff < -180) angleDiff += 360;
 
                             if(Math.abs(angleDiff) > neededRotationAngle){
                                 handleRotation(e, (angleDiff/Math.abs(angleDiff) * 90));
@@ -389,7 +392,7 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
             const centerX = currentLeft + currentWidth/2;
             const centerY = currentTop + currentHeight/2;
 
-            const newRotation = (rotationRef.current + degrees) % 360;
+            const newRotation = ((rotationRef.current + degrees) % 360 + 360) % 360;
 
             const{orientation: newOrientation} = getRotationValues(newRotation);
             const newIsVertical = newOrientation === 'v';

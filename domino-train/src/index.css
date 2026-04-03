@@ -3,7 +3,7 @@
   src: local(Karrik), url("DailyDominos/assets/Karrik-Regular.ttf") format("truetype");
 }
 
-body {
+html, body {
   margin: 0;
   background-color: #191919;
   font-family: 'Karrik', sans-serif;

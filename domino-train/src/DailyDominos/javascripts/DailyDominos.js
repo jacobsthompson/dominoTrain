@@ -54,15 +54,16 @@ function DailyDominos() {
     const dominoHistory = useRef([]);
     const gridHistory = useRef([grid]);
     const HistoryRef = useRef(1);
-    const [historySize, setHistorySize] = useState(1);
     const [blankGridState, setBlankGridState] = useState(null);
 
     const [skipAnimation, setSkipAnimation] = useState(false);
 
     const svgs = [statsIcon, howToIcon, moreIcon, icon];
 
-    const {startTimer, stopTimer, resetTimer, getTime, bestTimeCompare} = Timer();
+    const {startTimer, stopTimer, resetTimer, getTime, bestTimeCompare, toggleMenuTimer, getRawTime, setTime} = Timer();
     const finalTime = useRef('');
+
+    const timerReadyToStart = useRef(false);
 
     function preloadImages(srcs) {
       return Promise.all(srcs.map(src => new Promise((resolve) => {
@@ -78,6 +79,7 @@ function DailyDominos() {
         const today = new Date().toDateString();
         const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
         const beatenToday = stats?.lastWinDate === today;
+        const progressedToday = stats?.lastPlayedDate === today;
 
         const init = async ()  => {
             const { solution, start, end } = generateDominoValues(startingDominoCount, today);
@@ -89,6 +91,18 @@ function DailyDominos() {
             updateStreak();
             if(!beatenToday){
                 if(stats){
+                    console.log(stats.lastPlayedDate === today);
+                    if(progressedToday){
+                        console.log("Progress");
+                        setGrid(stats.currBoardStates);
+                        setValidatedGrid(stats.currBoardStates);
+                        setWinStates(stats.currDominoStates);
+                        gridHistory.current = stats.currBoardUndoHistory;
+                        dominoHistory.current = stats.currStatesUndoHistory;
+                        HistoryRef.current = stats.currHistoryRef;
+                        setTime(stats.currTime);
+                    }
+                    console.log("Open Start Modal")
                     openStartModal();
                     setFirstTutorial(false);
                 } else {
@@ -104,6 +118,7 @@ function DailyDominos() {
                 setSolutionFound(true);
                 setAnimatedWon(true);
                 setGameWon(true);
+                setTime(stats.currTime);
                 openWinModal();
             }
 
@@ -130,8 +145,16 @@ function DailyDominos() {
             soundGenerator.playClear();
             ResetHistory(100);
             resetTimer();
-            startTimer();
+            timerReadyToStart.current = true;
         }
+
+        setTimeout(() =>{
+            if(timerReadyToStart.current){
+                startTimer();
+                timerReadyToStart.current = false;
+            }
+        }, 100);
+
     }, [endlessMode]);
 
     //Live Validation
@@ -173,10 +196,10 @@ function DailyDominos() {
     const updateStreak = () => {
         const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
         if(stats){
-            const today = new Date();
+            const today = new Date().toDateString();
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            if(stats.lastWinDate !== today.toDateString() && stats.lastWinDate !== yesterday.toDateString()){
+            if(stats.lastWinDate !== today && stats.lastWinDate !== yesterday.toDateString()){
                 const updatedStats = {
                     wins: stats.wins,
                     streak: 0,
@@ -185,11 +208,97 @@ function DailyDominos() {
                     currWinStates: stats.currWinStates,
                     currWinBoard: stats.currWinBoard,
                     lastTime: stats.lastTime,
-                    bestTime: stats.bestTime
+                    bestTime: stats.bestTime,
+
+                    lastPlayedDate: stats.lastPlayedDate,
+                    currBoardStates: stats.currBoardStates,
+                    currDominoStates: stats.currDominoStates,
+                    currBoardUndoHistory: stats.currBoardUndoHistory,
+                    currStatesUndoHistory: stats.currStatesUndoHistory,
+                    currHistoryRef: stats.currHistoryRef,
+                    currTime: stats.currTime
                 };
 
                 localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
             }
+        }
+    }
+
+    const startProgress = () => {
+        if(!gameWon){
+            const stats = JSON.parse(localStorage.getItem('DailyDominoStats')) || {
+                wins: 0,
+                streak: 0,
+                maxStreak: 0,
+                lastWinDate: null,
+                currWinStates: null,
+                currWinBoard: null,
+                lastTime: null,
+                bestTime: null,
+
+                lastPlayedDate: null,
+                currBoardStates: null,
+                currDominoStates: null,
+                currBoardUndoHistory: null,
+                currStatesUndoHistory: null,
+                currHistoryRef: null,
+                currTime: null
+
+            };
+
+            const today = new Date().toDateString();
+
+            const updatedStats = {
+                wins: stats.wins,
+                streak: stats.streak,
+                maxStreak: stats.maxStreak,
+                lastWinDate: stats.lastWinDate,
+                currWinStates: stats.currWinStates,
+                currWinBoard: stats.currWinBoard,
+                lastTime: stats.lastTime,
+                bestTime: stats.bestTime,
+
+                lastPlayedDate: today,
+                currBoardStates: structuredClone(gridHistory.current.at(gridHistory.current.length - HistoryRef.current)),
+                currDominoStates: structuredClone(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current)),
+                currBoardUndoHistory: structuredClone(gridHistory.current),
+                currStatesUndoHistory: structuredClone(dominoHistory.current),
+                currHistoryRef: structuredClone(HistoryRef.current),
+                currTime: getRawTime()
+            };
+
+            localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
+            console.log("Progress Saved");
+        }
+    }
+
+    const saveProgress = () => {
+        const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+
+        const today = new Date().toDateString();
+
+        if(stats?.lastPlayedDate === today && !gameWon){
+            const updatedStats = {
+                wins: stats.wins,
+                streak: stats.streak,
+                maxStreak: stats.maxStreak,
+                lastWinDate: stats.lastWinDate,
+                currWinStates: stats.currWinStates,
+                currWinBoard: stats.currWinBoard,
+                lastTime: stats.lastTime,
+                bestTime: stats.bestTime,
+
+                lastPlayedDate: stats.lastPlayedDate,
+                currBoardStates: structuredClone(gridHistory.current.at(gridHistory.current.length - HistoryRef.current)),
+                currDominoStates: structuredClone(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current)),
+                currBoardUndoHistory: structuredClone(gridHistory.current),
+                currStatesUndoHistory: structuredClone(dominoHistory.current),
+                currHistoryRef: structuredClone(HistoryRef.current),
+                currTime: getRawTime()
+            };
+
+            localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
+            console.log("Progress Saved");
         }
     }
 
@@ -204,7 +313,16 @@ function DailyDominos() {
             currWinStates: null,
             currWinBoard: null,
             lastTime: null,
-            bestTime: null
+            bestTime: null,
+
+            lastPlayedDate: null,
+            currBoardStates: null,
+            currDominoStates: null,
+            currBoardUndoHistory: null,
+            currStatesUndoHistory: null,
+            currHistoryRef: null,
+            currTime: null
+
         };
 
         if(stats.lastWinDate === today) return;
@@ -223,7 +341,15 @@ function DailyDominos() {
             currWinStates: dominoStates,
             currWinBoard: grid,
             lastTime: finalTime.current,
-            bestTime: bestTimeCompare(finalTime.current, stats.bestTime)
+            bestTime: bestTimeCompare(finalTime.current, stats.bestTime),
+
+            lastPlayedDate: today,
+            currBoardStates: null,
+            currDominoStates: null,
+            currBoardUndoHistory: null,
+            currStatesUndoHistory: null,
+            currHistoryRef: null,
+            currTime: stats.currTime
         };
 
         localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
@@ -250,9 +376,7 @@ function DailyDominos() {
             if(!blankGridState) setBlankGridState(structuredClone(dominoHistory.current.at(-1)));
             gridHistory.current = [gridHistory.current.at(-1)];
             HistoryRef.current = 1;
-            setHistorySize(1);
-            // console.log("Reset");
-            // console.log(dominoHistory.current);
+            console.log("Reset");
         }, time);
     }
 
@@ -261,13 +385,13 @@ function DailyDominos() {
         dominoHistory.current = dominoHistory.current.slice(0, dominoHistory.current.length - HistoryRef.current + 1);
         gridHistory.current.push(grid);
         HistoryRef.current = 1;
-        setHistorySize(gridHistory.current.length);
 
         if(type === "clear") {
             dominoHistory.current.push(blankGridState);
         }
 
         setWinStates(dominoHistory.current.at(-1));
+        saveProgress();
     }
 
     const handlePlacement = (dominoId, cells) => {
@@ -298,7 +422,6 @@ function DailyDominos() {
         }
         setGrid(newGrid);
         sliceHistory(newGrid);
-        setValidatedGrid(null);
         return true;
     };
 
@@ -326,15 +449,15 @@ function DailyDominos() {
         if(JSON.stringify(gridHistory.current.at(-1)) !== JSON.stringify(clearedGrid)){
             sliceHistory(clearedGrid, "clear");
         }
-        // console.log(dominoHistory.current);
-        // console.log(blankGridState);
         handleValidation();
         setClearBoard(prev => prev + 1);
         soundGenerator.playClear();
     }
 
     const handleResize = () => {
-        if(window.innerWidth < 430){
+        if(window.innerWidth < 400){
+            SET_CELL_SIZE(32);
+        } else if(window.innerWidth < 430){
             SET_CELL_SIZE(35);
         } else if(window.innerWidth < 500){
             SET_CELL_SIZE(40);
@@ -345,16 +468,34 @@ function DailyDominos() {
 
     const openStartModal = () => {
         setIsStartModalOpen(!isStartModalOpen);
-        ResetHistory(0);
+        const today = new Date().toDateString();
+        const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+        const progressedToday = stats?.lastPlayedDate === today;
+
+        if(!progressedToday && isStartModalOpen){
+            ResetHistory(0);
+            startProgress();
+        }
+
         if(isStartModalOpen) startTimer();
     }
 
     const openTutorialModal = () => {
         setIsTutorialModalOpen(!isTutorialModalOpen);
         if(firstTutorial) {
-            ResetHistory(0);
+            const today = new Date().toDateString();
+            const stats = JSON.parse(localStorage.getItem('DailyDominoStats'));
+            const progressedToday = stats?.lastPlayedDate === today;
+
+            if(!progressedToday){
+                ResetHistory(0);
+                startProgress();
+            }
+
             startTimer();
             setFirstTutorial(false);
+        } else {
+            toggleMenuTimer();
         }
     }
 
@@ -364,10 +505,12 @@ function DailyDominos() {
 
     const openStatsModal = () => {
         setIsStatsModalOpen(!isStatsModalOpen);
+        toggleMenuTimer();
     }
 
     const openNewGameModal = () => {
         setIsNewGameModalOpen(!isNewGameModalOpen);
+        toggleMenuTimer();
     }
 
     const handleWon = () => {
@@ -383,16 +526,19 @@ function DailyDominos() {
         setDominoStates(states);
         dominoHistory.current.push(structuredClone(states));
         setWinStates(dominoHistory.current.at(-1));
+        saveProgress();
+        console.log("Stating");
     }
 
-    function checkUndoCap(){ return (gridHistory.current.length - HistoryRef.current) > 0; }
-    function checkRedoCap(){ return (gridHistory.current.length - HistoryRef.current) < gridHistory.current.length-1; }
+    function checkUndoCap(){ return (gridHistory.current?.length - HistoryRef.current) > 0; }
+    function checkRedoCap(){ return (gridHistory.current?.length - HistoryRef.current) < gridHistory.current?.length-1; }
 
     const handleUndo = () => {
         if(checkUndoCap()){
             HistoryRef.current += 1;
             setWinStates(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current));
             setGrid(gridHistory.current.at(gridHistory.current.length - HistoryRef.current));
+            saveProgress();
         }
     }
 
@@ -401,6 +547,7 @@ function DailyDominos() {
             HistoryRef.current -= 1;
             setWinStates(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current));
             setGrid(gridHistory.current.at(gridHistory.current.length - HistoryRef.current));
+            saveProgress();
         }
     }
 
@@ -479,32 +626,12 @@ function DailyDominos() {
                         cursor: checkRedoCap() ? 'pointer' : 'auto'
                     }}>Redo</a>
                 </div>
-                {isStartModalOpen && (
-                    <div>
-                    <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} updateCallback={openStartModal}/>
-                    </div>
-                )}
-                {isTutorialModalOpen && (
-                    <div>
-                        <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal} buttonText={"Back To Game"} firstTutorial={firstTutorial}/>
-                    </div>
-                )}
-                {isStatsModalOpen && (
-                    <div>
-                        <StatsModal updateCallback={openStatsModal}/>
-                    </div>
-                )}
-                {isWinModalOpen && (
-                    <div>
-                        <WinModal endlessMode={endlessMode} handleEndlessMode={handleEndless} updateCallback={openWinModal} finalTime={finalTime}/>
-                    </div>
-                )}
-                {isNewGameModalOpen && (
-                    <div>
-                        <NewGameModal handleNewGame={handleEndless} updateCallback={openNewGameModal}/>
-                    </div>
-                )}
             </div>
+            {isStartModalOpen && <StartModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} updateCallback={openStartModal}/>}
+            {isTutorialModalOpen && <TutorialModal CELL_SIZE={CELL_SIZE} amountOfTiles={startingDominoCount} isModalOpen={isTutorialModalOpen} updateCallback={openTutorialModal} buttonText={"Back To Game"} firstTutorial={firstTutorial}/>}
+            {isStatsModalOpen && <StatsModal updateCallback={openStatsModal}/>}
+            {isWinModalOpen && <WinModal endlessMode={endlessMode} handleEndlessMode={handleEndless} updateCallback={openWinModal} finalTime={finalTime}/>}
+            {isNewGameModalOpen && <NewGameModal handleNewGame={handleEndless} updateCallback={openNewGameModal}/>}
         </div>
     );
 }
