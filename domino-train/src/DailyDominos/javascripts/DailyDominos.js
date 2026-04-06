@@ -91,9 +91,7 @@ function DailyDominos() {
             updateStreak();
             if(!beatenToday){
                 if(stats){
-                    console.log(stats.lastPlayedDate === today);
                     if(progressedToday){
-                        console.log("Progress");
                         setGrid(stats.currBoardStates);
                         setValidatedGrid(stats.currBoardStates);
                         setWinStates(stats.currDominoStates);
@@ -102,7 +100,6 @@ function DailyDominos() {
                         HistoryRef.current = stats.currHistoryRef;
                         setTime(stats.currTime);
                     }
-                    console.log("Open Start Modal")
                     openStartModal();
                     setFirstTutorial(false);
                 } else {
@@ -261,14 +258,14 @@ function DailyDominos() {
                 lastPlayedDate: today,
                 currBoardStates: structuredClone(gridHistory.current.at(gridHistory.current.length - HistoryRef.current)),
                 currDominoStates: structuredClone(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current)),
-                currBoardUndoHistory: structuredClone(gridHistory.current),
-                currStatesUndoHistory: structuredClone(dominoHistory.current),
-                currHistoryRef: structuredClone(HistoryRef.current),
+                currBoardUndoHistory: [],
+                currStatesUndoHistory: [],
+                currHistoryRef: 1,
                 currTime: getRawTime()
             };
 
             localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
-            console.log("Progress Saved");
+            // console.log("Progress Started");
         }
     }
 
@@ -298,7 +295,7 @@ function DailyDominos() {
             };
 
             localStorage.setItem('DailyDominoStats', JSON.stringify(updatedStats));
-            console.log("Progress Saved");
+            // console.log("Progress Saved");
         }
     }
 
@@ -376,22 +373,26 @@ function DailyDominos() {
             if(!blankGridState) setBlankGridState(structuredClone(dominoHistory.current.at(-1)));
             gridHistory.current = [gridHistory.current.at(-1)];
             HistoryRef.current = 1;
-            console.log("Reset");
+            // console.log("Reset");
         }, time);
     }
 
-    function sliceHistory(grid, type = "placement"){
-        gridHistory.current = gridHistory.current.slice(0, gridHistory.current.length - HistoryRef.current + 1);
-        dominoHistory.current = dominoHistory.current.slice(0, dominoHistory.current.length - HistoryRef.current + 1);
-        gridHistory.current.push(grid);
-        HistoryRef.current = 1;
+    function sliceHistory(grid, type = "placement", dominoId = null){
+        // console.log("Grid", JSON.stringify(grid), " Break ", JSON.stringify(gridHistory.current.at(gridHistory.current.length - HistoryRef.current)));
+        if (JSON.stringify(grid) !== JSON.stringify(gridHistory.current.at(gridHistory.current.length - HistoryRef.current))) {
+            // console.log("Saved Grid")
+            gridHistory.current = gridHistory.current.slice(0, gridHistory.current.length - HistoryRef.current + 1);
+            dominoHistory.current = dominoHistory.current.slice(0, dominoHistory.current.length - HistoryRef.current + 1);
+            gridHistory.current.push(grid);
+            HistoryRef.current = 1;
 
-        if(type === "clear") {
-            dominoHistory.current.push(blankGridState);
+            if (type === "clear") {
+                dominoHistory.current.push(blankGridState);
+            }
+
+            setWinStates(dominoHistory.current.at(-1));
+            saveProgress();
         }
-
-        setWinStates(dominoHistory.current.at(-1));
-        saveProgress();
     }
 
     const handlePlacement = (dominoId, cells) => {
@@ -524,10 +525,15 @@ function DailyDominos() {
 
     const getDominoStates = (states) => {
         setDominoStates(states);
-        dominoHistory.current.push(structuredClone(states));
-        setWinStates(dominoHistory.current.at(-1));
-        saveProgress();
-        console.log("Stating");
+        // console.log("States", JSON.stringify(states))
+        // console.log("State History", JSON.stringify(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current)));
+        // console.log(JSON.stringify(states) !== JSON.stringify(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current)));
+        if (JSON.stringify(states) !== JSON.stringify(dominoHistory.current.at(dominoHistory.current.length - HistoryRef.current))) {
+            // console.log("Saved States")
+            dominoHistory.current.push(structuredClone(states));
+            setWinStates(dominoHistory.current.at(-1));
+            saveProgress();
+        }
     }
 
     function checkUndoCap(){ return (gridHistory.current?.length - HistoryRef.current) > 0; }

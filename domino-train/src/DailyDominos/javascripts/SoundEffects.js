@@ -38,17 +38,17 @@ class SoundGenerator {
 
     // 1. Domino Pickup - Rising pitch "pop"
     playPickup() {
-        this.playDomino(200, 600)
+        this.playDomino(200, 600);
     }
 
     // 2. Domino Put Down - Descending "thunk"
     playPutDown() {
-        this.playDomino(600, 200)
+        this.playDomino(600, 200);
     }
 
     // 3. Domino Rotation - Quick "click"
     playRotate() {
-        this.playDomino(400, 400)
+        this.playDomino(400, 400);
     }
 
     playError(){

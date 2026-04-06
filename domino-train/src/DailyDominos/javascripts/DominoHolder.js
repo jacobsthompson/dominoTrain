@@ -29,8 +29,9 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
             return false;
         }
 
-        if(!gameStarted) setGameStarted(true);
-        console.log("Game Started!");
+        if(!gameStarted) {
+            setGameStarted(true);
+        }
         currentlyDraggingId.current = dominoId;
         return true;
     };
@@ -52,7 +53,6 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
     const getDominoState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {
         dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation, isPlaced: isPlaced};
         if(gameStarted){
-            console.log("Returning");
             returnStates(structuredClone(dominoStates.current));
         }
     }
@@ -60,6 +60,14 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
     const getClearState = (dominoId, x, y, gridx, gridy, rotation, isPlaced) => {
         dominoStates.current[dominoId] = {x: x,y: y, gridx: gridx,gridy: gridy, rotation: rotation, isPlaced: isPlaced};
     }
+
+    const [dominoGameStarted, setDominoGameStarted] = useState(false);
+
+    useEffect(() => {
+        if(dominoStates.current.length === undefined){
+            setDominoGameStarted(true);
+        }
+    }, [gameStarted])
 
    return(
        <div className="domino-holder" style={{width: `${CELL_SIZE * (GRID_WIDTH+2)}px`}}>
@@ -81,6 +89,7 @@ export default function DominoHolder({count, solution, onPlacement, onRemoval, g
                            returnState={getDominoState}
                            clearState={getClearState}
                            initialState={initialStates?.[domino.id]}
+                           gameStarted={dominoGameStarted}
                        />
                    </div>
                ))}

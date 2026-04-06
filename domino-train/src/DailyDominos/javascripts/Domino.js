@@ -4,7 +4,7 @@ import {HOLDER_SCALING} from "./Constants";
 import {soundGenerator} from "./SoundEffects";
 import '../stylesheets/domino.css'
 
-function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid, returnState, initialState, clearState}){
+function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragStart, onDragEnd, validatedGrid, clearBoard, grid, returnState, initialState, clearState, gameStarted}){
     const [position, setPosition] = useState(initialState ? {x:initialState.x, y:initialState.y} : {x:0,y:0});
     const [gridPosition, setGridPosition] = useState(initialState ? {x:initialState.gridx, y:initialState.gridy} : {x: -1, y: -1});
     const initialRotation = 270;
@@ -29,6 +29,12 @@ function Domino({CELL_SIZE, id, value1, value2, onPlacement, onPickup, onDragSta
         }, 50);
         return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        if(gameStarted){
+            returnState(id, position.x, position.y, gridPosition.x, gridPosition.y, rotationRef.current, isPlaced);
+        }
+    }, [gameStarted]);
 
     useEffect(() => {
         if(clearBoard !== undefined && clearBoard > 0){
